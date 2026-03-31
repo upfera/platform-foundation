@@ -1,0 +1,8 @@
+---
+- name: 🧩 MicroK8s Cluster Setup
+  hosts: microk8s_cluster, local
+  become: true
+  tasks:
+    - name: 📦 Install MicroK8s
+      ansible.builtin.import_role:
+        name: microk8s

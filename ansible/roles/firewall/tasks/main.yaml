@@ -1,0 +1,16 @@
+- name: 🔥 Configure firewall
+  become: true
+  block:
+    - name: 🔥 Setup UFW firewall rules
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port | string }}"
+      loop:
+        - { port: 22, label: "SSH" }
+        - { port: 80, label: "HTTP" }
+        - { port: 443, label: "HTTPS" }
+
+    - name: 🧱 Enable UFW firewall
+      community.general.ufw:
+        state: enabled
+        logging: 'on'

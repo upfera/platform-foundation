@@ -1,0 +1,69 @@
+name: 🛠️ Bootstrap host
+
+on:
+  workflow_dispatch:
+    inputs:
+      user:
+        description: 'User to connect with (root or ops)'
+        required: true
+        default: 'root'
+        type: choice
+        options:
+          - ops
+          - root
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Checkout code
+        uses: actions/checkout@v6
+
+      - name: ⚙️ Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            requirements.yaml
+          pip-install: -r requirements.txt
+
+      - name: 📦 Cache Virtual Environment
+        uses: actions/cache@v5
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: 🌌 Cache Ansible Collections
+        uses: actions/cache@v5
+        with:
+          path: collections
+          key: collections-${{ runner.os }}-${{ hashFiles('requirements.yaml') }}
+
+      - name: 🔑 Setup SSH
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+
+      - name: 🔍 Register Ansible Problem Matcher
+        run: echo "::add-matcher::.github/matchers/problem-matcher.json"
+
+      - name: ⚡ Run Bootstrap Playbook
+        env:
+          BOOTSTRAP_HOSTS: ${{ vars.BOOTSTRAP_HOSTS }}
+          ANSIBLE_USER: ${{ github.event.inputs.user }}
+          PUB_KEY_PATH: ~/.ssh/id_rsa.pub
+        run: |
+          make bootstrap
+
+      - name: 🔍 Remove Ansible Problem Matcher
+        if: always()
+        run: |
+          echo "::remove-matcher owner=ansible-error::"
+            
