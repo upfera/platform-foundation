@@ -1,0 +1,78 @@
+- name: 👤 Ensure new user exists and in sudo group
+  user:
+    name: "{{ initial_user }}"
+    groups: sudo
+    append: yes
+    state: present
+    shell: /bin/bash
+    create_home: yes
+
+- name: 🔓 Allow {{ initial_user }} to use sudo without a password
+  lineinfile:
+    path: /etc/sudoers.d/{{ initial_user }}
+    create: yes
+    state: present
+    owner: root
+    group: root
+    mode: '0440'
+    line: "{{ initial_user }} ALL=(ALL) NOPASSWD:ALL"
+
+- name: 📁 Create .ssh directory for new user
+  file:
+    path: "/home/{{ initial_user }}/.ssh"
+    state: directory
+    owner: "{{ initial_user }}"
+    group: "{{ initial_user }}"
+    mode: 0700
+
+- name: 🔑 Copy SSH public key to authorized_keys
+  copy:
+    src: "{{ ssh_pub_key_path }}"
+    dest: "/home/{{ initial_user }}/.ssh/authorized_keys"
+    owner: "{{ initial_user }}"
+    group: "{{ initial_user }}"
+    mode: 0600
+
+- name: 🚫 Disable password authentication for SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    backup: yes
+
+- name: ✅ Enable PubkeyAuthentication for SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PubkeyAuthentication'
+    line: 'PubkeyAuthentication yes'
+    backup: yes
+
+- name: 🔄 Restart SSH service
+  service:
+    name: ssh
+    state: restarted
+
+- name: 🔥 Setup UFW firewall rules
+  ufw:
+    rule: allow
+    port: "{{ item.port }}"
+  loop:
+    - { port: 22, label: "SSH" }
+    - { port: 80, label: "HTTP" }
+    - { port: 443, label: "HTTPS" }
+    - { port: 16443, label: "KubeAPI" }
+
+- name: 🧱 Enable UFW firewall
+  ufw:
+    state: enabled
+    logging: 'on'
+
+- name: 🧩 Allow UFW on cali+ interfaces (for Calico networking)
+  ufw:
+    rule: allow
+    interface_in: cali+
+
+- name: 🚀 Allow outbound traffic on cali+ interfaces
+  ufw:
+    rule: allow
+    interface_out: cali+

@@ -1,0 +1,60 @@
+---
+- name: Install and prepare MicroK8s
+  become: true
+  block:
+    - name: 🧹️ Uninstall if installed
+      snap:
+        name: microk8s
+        state: absent
+      ignore_errors: yes
+
+    - name: 📦 Install via snap
+      snap:
+        name: microk8s
+        classic: yes
+        state: present
+        channel: "{{ microk8s_channel }}"
+
+- name: Finalize MicroK8s setup (addons + kubeconfig)
+  become: true
+  block:
+    - name: ⏳ Wait until ready
+      command: microk8s status --wait-ready
+      register: status_check
+      retries: 60
+      delay: 3
+      until: status_check.rc == 0
+
+    - name: 🧩 Enable addons
+      command: microk8s enable dns hostpath-storage rbac
+
+    - name: 🛂 Add user to group
+      user:
+        name: "{{ target_user }}"
+        groups: microk8s
+        append: yes
+
+    - name: 📂 Ensure .kube directory exists
+      file:
+        path: "{{ home_dir }}/.kube"
+        state: directory
+        owner: "{{ target_user }}"
+        mode: '0755'
+
+    - name: 🧊 Export MicroK8s config to ~/.kube/config
+      shell: microk8s config > {{ home_dir }}/.kube/config
+      args:
+        executable: /bin/bash
+
+    - name: 📜 Create command wrappers to avoid 'microk8s' prefix
+      copy:
+        dest: "/usr/local/bin/{{ item }}"
+        content: |
+          #!/bin/bash
+          exec microk8s {{ item }} "$@"
+        mode: '0755'
+      loop:
+        - kubectl
+        - helm
+
+
