@@ -1,16 +1,16 @@
 - name: 👤 Ensure new user exists and in sudo group
-  user:
+  ansible.builtin.user:
     name: "{{ initial_user }}"
     groups: sudo
-    append: yes
+    append: true
     state: present
     shell: /bin/bash
-    create_home: yes
+    create_home: true
 
-- name: 🔓 Allow {{ initial_user }} to use sudo without a password
-  lineinfile:
-    path: /etc/sudoers.d/{{ initial_user }}
-    create: yes
+- name: 🔓 Allow target user to use sudo without a password
+  ansible.builtin.lineinfile:
+    path: "/etc/sudoers.d/{{ initial_user }}"
+    create: true
     state: present
     owner: root
     group: root
@@ -18,42 +18,42 @@
     line: "{{ initial_user }} ALL=(ALL) NOPASSWD:ALL"
 
 - name: 📁 Create .ssh directory for new user
-  file:
+  ansible.builtin.file:
     path: "/home/{{ initial_user }}/.ssh"
     state: directory
     owner: "{{ initial_user }}"
     group: "{{ initial_user }}"
-    mode: 0700
+    mode: '0700'
 
 - name: 🔑 Copy SSH public key to authorized_keys
-  copy:
+  ansible.builtin.copy:
     src: "{{ ssh_pub_key_path }}"
     dest: "/home/{{ initial_user }}/.ssh/authorized_keys"
     owner: "{{ initial_user }}"
     group: "{{ initial_user }}"
-    mode: 0600
+    mode: '0600'
 
 - name: 🚫 Disable password authentication for SSH
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication no'
-    backup: yes
+    backup: true
 
 - name: ✅ Enable PubkeyAuthentication for SSH
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^PubkeyAuthentication'
     line: 'PubkeyAuthentication yes'
-    backup: yes
+    backup: true
 
 - name: 🔄 Restart SSH service
-  service:
+  ansible.builtin.service:
     name: ssh
     state: restarted
 
 - name: 🔥 Setup UFW firewall rules
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "{{ item.port }}"
   loop:
@@ -63,16 +63,16 @@
     - { port: 16443, label: "KubeAPI" }
 
 - name: 🧱 Enable UFW firewall
-  ufw:
+  community.general.ufw:
     state: enabled
     logging: 'on'
 
 - name: 🧩 Allow UFW on cali+ interfaces (for Calico networking)
-  ufw:
+  community.general.ufw:
     rule: allow
     interface_in: cali+
 
 - name: 🚀 Allow outbound traffic on cali+ interfaces
-  ufw:
+  community.general.ufw:
     rule: allow
     interface_out: cali+

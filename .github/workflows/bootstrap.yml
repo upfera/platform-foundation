@@ -22,9 +22,10 @@ jobs:
 
       - name: 🔑 Setup SSH Agent (Memory-Only)
         run: |
-          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          eval $(ssh-agent -s)
           echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
-          echo "SSH_AUTH_SOCK=/tmp/ssh_agent.sock" >> $GITHUB_ENV
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
 
       - name: ⚡ Run Bootstrap
         run: make bootstrap-vps

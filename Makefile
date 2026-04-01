@@ -12,11 +12,10 @@ vps:
 	$(ANSIBLE) -l vps ansible/site.yaml
 
 bootstrap-vps:
-	$(ANSIBLE) -l vps ansible/bootstrap.yaml -e "bootstrap=true"
+	$(ANSIBLE) -l vps ansible/site.yaml -e "bootstrap=true"
 
 lint:
-	ansible-lint ansible/site.yaml ansible/bootstrap.yaml
+	ansible-lint ansible/site.yaml
 
 syntax-check:
-	ansible-playbook --syntax-check ansible/site.yaml -i $(INVENTORY)
-	ansible-playbook --syntax-check ansible/bootstrap.yaml -i $(INVENTORY)
+	$(ANSIBLE) --syntax-check ansible/site.yaml

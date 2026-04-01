@@ -1,7 +1,25 @@
 ---
-- name: 🚀 Upfera Setup
+- name: 👤 Bootstrap server (as root)
   hosts: all
-  become: yes
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: 🔍 Validate bootstrap requirements
+      ansible.builtin.assert:
+        that:
+          - ansible_connection != 'local'
+        fail_msg: "Bootstrap MUST NOT run on local (WSL)"
+      when: bootstrap | default(false) | bool
+
+    - name: 🚀 Run bootstrap role
+      ansible.builtin.include_role:
+        name: bootstrap
+      when: bootstrap | default(false) | bool
+
+- name: ⚙️ Platform Setup
+  hosts: all
+  become: true
 
   roles:
-    - cluster
+    - role: cluster

@@ -1,3 +1,3 @@
 ---
 - name: 🧩 Install Kubernetes distro
-  include_tasks: "{{ k8s_distro }}.yaml"
+  ansible.builtin.include_tasks: "{{ k8s_distro }}.yaml"

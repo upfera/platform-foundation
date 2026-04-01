@@ -6,7 +6,7 @@ initial_user: "{{ target_user }}"
 ssh_pub_key_path: "~/.ssh/id_rsa.pub"
 
 # Default behavior for bootstrap
-setup_user: false
+bootstrap: false
 
 # Home directory detection
 home_dir: "{{ '/home/' + target_user if ansible_connection != 'local' else lookup('env', 'HOME') }}"
