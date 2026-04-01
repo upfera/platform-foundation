@@ -12,7 +12,7 @@ jobs:
       - name: ⚙️ Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: 📦 Install dependencies
         run: |
@@ -30,7 +30,6 @@ jobs:
           eval $(ssh-agent -s)
           echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
 
       - name: 🚀 Deploy to VPS
         run: make vps
