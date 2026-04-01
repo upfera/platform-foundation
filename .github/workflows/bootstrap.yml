@@ -7,7 +7,8 @@ jobs:
   bootstrap:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 🔍 Checkout code
+        uses: actions/checkout@v4
 
       - name: ⚙️ Set up Python
         uses: actions/setup-python@v5
@@ -19,7 +20,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
 
+      - name: 🔑 Setup SSH Agent (Memory-Only)
+        run: |
+          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "SSH_AUTH_SOCK=/tmp/ssh_agent.sock" >> $GITHUB_ENV
+
       - name: ⚡ Run Bootstrap
         run: make bootstrap-vps
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
+          ANSIBLE_SSH_ARGS: "-o IdentitiesOnly=yes"
