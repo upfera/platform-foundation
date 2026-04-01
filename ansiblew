@@ -22,10 +22,9 @@ pip install "ansible-core==${ANSIBLE_VERSION}"
 
 echo "==> [3/4] Installing required collections..."
 
+export ANSIBLE_CONFIG="$ROOT/ansible/ansible.cfg"
 ansible-galaxy collection install community.general -p ./collections
 
 echo "==> [4/4] Running ansible-playbook: $*"
-
-export ANSIBLE_CONFIG="$ROOT/ansible/ansible.cfg"
 
 exec ansible-playbook "$@"

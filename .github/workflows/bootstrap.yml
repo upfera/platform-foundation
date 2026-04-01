@@ -3,6 +3,11 @@ name: ⚡ Manual Bootstrap
 on:
   workflow_dispatch:
 
+env:
+  VPS_IP_1: ${{ vars.VPS_IP_1 }}
+  VPS_IP_2: ${{ vars.VPS_IP_2 }}
+  VPS_IP_3: ${{ vars.VPS_IP_3 }}
+
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
