@@ -30,11 +30,6 @@ jobs:
           eval $(ssh-agent -s)
           echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
-          chmod 644 ~/.ssh/id_rsa.pub
 
       - name: ⚡ Run Bootstrap
         run: make bootstrap-vps

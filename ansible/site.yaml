@@ -1,25 +1,22 @@
 ---
-- name: 👤 Bootstrap server (as root)
+- name: 🛠️ Platform foundation
   hosts: all
   become: true
   gather_facts: false
 
   tasks:
-    - name: 🔍 Validate bootstrap requirements
-      ansible.builtin.assert:
-        that:
-          - ansible_connection != 'local'
-        fail_msg: "Bootstrap MUST NOT run on local (WSL)"
-      when: bootstrap | default(false) | bool
+    - name: Bootstrap Sequence
+      when: bootstrap | default(false)
+      block:
+        - name: 🔍 Check Environment
+          ansible.builtin.assert:
+            that: ansible_connection != 'local'
+            fail_msg: "❌ Bootstrap blocked on local/WSL"
 
-    - name: 🚀 Run bootstrap role
+        - name: 🏗️ Initialize System
+          ansible.builtin.include_role:
+            name: bootstrap
+
+    - name: ⚙️ Deploy Cluster Role
       ansible.builtin.include_role:
-        name: bootstrap
-      when: bootstrap | default(false) | bool
-
-- name: ⚙️ Platform Setup
-  hosts: all
-  become: true
-
-  roles:
-    - role: cluster
+        name: cluster
