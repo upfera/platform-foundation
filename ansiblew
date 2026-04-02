@@ -5,7 +5,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 VENV_DIR=".venv"
-ANSIBLE_VERSION="2.20.4"
 
 echo "==> [1/4] Checking Python venv..."
 
@@ -18,12 +17,12 @@ source "$VENV_DIR/bin/activate"
 echo "==> [2/4] Upgrading pip + installing Ansible..."
 
 pip install --upgrade pip
-pip install "ansible-core==${ANSIBLE_VERSION}"
+pip install -r "$ROOT/requirements.txt"
 
 echo "==> [3/4] Installing required collections..."
 
 export ANSIBLE_CONFIG="$ROOT/ansible.cfg"
-ansible-galaxy collection install community.general ansible.posix -p ./collections
+ansible-galaxy collection install -r "$ROOT/requirements.yaml" -p ./collections
 
 echo "==> [4/4] Running ansible-playbook: $*"
 
