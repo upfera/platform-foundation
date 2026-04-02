@@ -1,6 +1,6 @@
 - name: 👤 Ensure new user exists and in sudo group
   ansible.builtin.user:
-    name: "{{ initial_user }}"
+    name: "{{ target_user }}"
     groups: sudo
     append: true
     state: present
@@ -9,25 +9,25 @@
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
-    path: "/etc/sudoers.d/{{ initial_user }}"
+    path: "/etc/sudoers.d/{{ target_user }}"
     create: true
     state: present
     owner: root
     group: root
     mode: '0440'
-    line: "{{ initial_user }} ALL=(ALL) NOPASSWD:ALL"
+    line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
 
 - name: 📁 Create .ssh directory for new user
   ansible.builtin.file:
-    path: "/home/{{ initial_user }}/.ssh"
+    path: "/home/{{ target_user }}/.ssh"
     state: directory
-    owner: "{{ initial_user }}"
-    group: "{{ initial_user }}"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
     mode: '0700'
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
-    user: "{{ initial_user }}"
+    user: "{{ target_user }}"
     state: present
     key: "{{ lookup('file', ssh_pub_key_path) }}"
 

@@ -1,6 +1,5 @@
 # Target user for both local and VPS
 target_user: ops
-initial_user: "{{ target_user }}"
 
 # SSH configuration for VPS
 ssh_pub_key_path: "~/.ssh/id_rsa.pub"
