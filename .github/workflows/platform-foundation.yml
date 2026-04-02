@@ -1,4 +1,4 @@
-name: ⚡ Manual Bootstrap
+name: 🚀 Platform Foundation
 
 on:
   workflow_dispatch:
@@ -27,13 +27,16 @@ jobs:
           pip install -r requirements.txt
           ansible-galaxy collection install -r requirements.yaml -p ./collections
 
-      - name: 🔑 Setup SSH Agent (Memory-Only)
+      - name: 🔑 Setup SSH Keys
         run: |
-          eval $(ssh-agent -s)
-          echo "${{ secrets.VPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" > ops_key
+          chmod 600 ops_key
+          echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" > root_key
+          chmod 600 root_key
 
-      - name: ⚡ Run Bootstrap
-        run: make bootstrap-vps
+      - name: ⚡ Run Platform Foundation
+        run: |
+          make vps
         env:
-          ANSIBLE_HOST_KEY_CHECKING: 'False'
+          OPS_PRIVATE_KEY_FILE: ops_key
+          ROOT_PRIVATE_KEY_FILE: root_key

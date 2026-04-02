@@ -1,21 +1,17 @@
 all:
   vars:
-    target_user: ops
-    bootstrap: false
-
     ansible_become: true
     ansible_become_method: sudo
-
 
   children:
     local:
       hosts:
         localhost:
           ansible_connection: local
-          ansible_user: "{{ lookup('env', 'USER') }}"
           ansible_python_interpreter: "{{ ansible_playbook_python }}"
       vars:
         k8s_distro: microk8s
+        ansible_user: "{{ lookup('env', 'USER') }}"
 
     vps:
       hosts:
@@ -27,4 +23,5 @@ all:
           ansible_host: "{{ lookup('env', 'VPS_IP_3') }}"
       vars:
         k8s_distro: k3s
-        ansible_user: "{{ 'root' if bootstrap | bool else target_user }}"
+        ansible_user: "{{ target_user }}"
+        ansible_ssh_private_key_file: "{{ lookup('env', 'OPS_PRIVATE_KEY_FILE') | default('ops_key', true) }}"

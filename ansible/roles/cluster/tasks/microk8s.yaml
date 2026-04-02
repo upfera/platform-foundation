@@ -2,18 +2,12 @@
 - name: Install and prepare MicroK8s
   become: true
   block:
-    - name: 🧹️ Uninstall if installed
-      community.general.snap:
-        name: microk8s
-        state: absent
-      ignore_errors: true
-
     - name: 📦 Install via snap
       community.general.snap:
         name: microk8s
         classic: true
         state: present
-        channel: "{{ microk8s_channel }}"
+        channel: "{{ microk8s_channel | default('latest/stable') }}"
 
 - name: Finalize MicroK8s setup (addons + kubeconfig)
   become: true
@@ -28,21 +22,21 @@
     - name: 🧩 Enable addons
       ansible.builtin.command: microk8s enable dns hostpath-storage rbac
 
-    - name: 🛂 Add user to group
+    - name: 🪪 Add user to group
       ansible.builtin.user:
-        name: "{{ target_user }}"
+        name: "{{ ansible_user }}"
         groups: microk8s
         append: true
 
     - name: 📂 Ensure .kube directory exists
       ansible.builtin.file:
-        path: "{{ home_dir }}/.kube"
+        path: "{{ ansible_user_dir }}/.kube"
         state: directory
-        owner: "{{ target_user }}"
+        owner: "{{ ansible_user }}"
         mode: '0755'
 
     - name: 🧊 Export MicroK8s config to ~/.kube/config
-      ansible.builtin.shell: microk8s config > {{ home_dir }}/.kube/config
+      ansible.builtin.shell: microk8s config > {{ ansible_user_dir }}/.kube/config
       args:
         executable: /bin/bash
 

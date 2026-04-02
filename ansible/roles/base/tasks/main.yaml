@@ -1,0 +1,64 @@
+- name: 👤 Ensure target user exists and in sudo group
+  ansible.builtin.user:
+    name: "{{ target_user }}"
+    groups: sudo
+    append: true
+    state: present
+    shell: /bin/bash
+    create_home: true
+  when: ansible_connection != 'local'
+
+- name: 🔓 Allow target user to use sudo without a password
+  ansible.builtin.lineinfile:
+    path: "/etc/sudoers.d/{{ target_user }}"
+    create: true
+    state: present
+    owner: root
+    group: root
+    mode: '0440'
+    line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
+  when: ansible_connection != 'local'
+
+- name: 🔑 Copy SSH public key to authorized_keys
+  ansible.builtin.authorized_key:
+    user: "{{ target_user }}"
+    state: present
+    key: "{{ hostvars['localhost']['generated_ssh_pub_key'] }}"
+  when: ansible_connection != 'local'
+
+- name: 🔐 Configure SSH hardening
+  when: ansible_connection != 'local'
+  block:
+    - name: 🚫 Disable password authentication for SSH
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        backup: true
+      notify: Restart SSH
+
+    - name: ✅ Enable PubkeyAuthentication for SSH
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        backup: true
+      notify: Restart SSH
+
+    - name: 🚫 Disable root SSH login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        backup: true
+      notify: Restart SSH
+
+- name: 📦 Ensure base packages are installed
+  ansible.builtin.package:
+    name:
+      - curl
+      - git
+      - vim
+      - sudo
+    state: present
