@@ -6,7 +6,7 @@
 
   tasks:
     - name: Bootstrap Sequence
-      when: bootstrap | default(false)
+      when: bootstrap | default(false) | bool
       block:
         - name: 🔍 Check Environment
           ansible.builtin.assert:

@@ -26,4 +26,4 @@ all:
           ansible_host: "{{ lookup('env', 'VPS_IP_3') }}"
       vars:
         k8s_distro: k3s
-        ansible_user: "{{ 'root' if bootstrap else target_user }}"
+        ansible_user: "{{ 'root' if bootstrap | bool else target_user }}"
