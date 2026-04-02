@@ -1,3 +1,30 @@
+- name: 🔑 Handle SSH public key for bootstrap
+  ansible.builtin.set_fact:
+    generated_ssh_pub_key: "{{ lookup('file', lookup('env', 'OPS_PUBLIC_KEY_FILE') | default('ops_key.pub', true)) }}"
+  run_once: true
+  delegate_to: localhost
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
+
+- name: 🔍 Detect VPS connection as target user
+  ansible.builtin.wait_for_connection:
+    timeout: 5
+  register: ops_check
+  ignore_errors: true
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
+
+- name: ⚙️ Fallback to root if target user is not accessible
+  ansible.builtin.set_fact:
+    ansible_user: root
+    ansible_ssh_private_key_file: "{{ lookup('env', 'ROOT_PRIVATE_KEY_FILE') | default('root_key', true) }}"
+  when:
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
+    - ops_check is failed
+
 - name: 👤 Ensure target user exists and in sudo group
   ansible.builtin.user:
     name: "{{ target_user }}"
@@ -6,7 +33,9 @@
     state: present
     shell: /bin/bash
     create_home: true
-  when: ansible_connection != 'local'
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
@@ -18,17 +47,23 @@
     mode: '0440'
     line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
-  when: ansible_connection != 'local'
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ target_user }}"
     state: present
     key: "{{ hostvars['localhost']['generated_ssh_pub_key'] }}"
-  when: ansible_connection != 'local'
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
 
 - name: 🔐 Configure SSH hardening
-  when: ansible_connection != 'local'
+  when: 
+    - ansible_connection != 'local'
+    - bootstrap | default(false) | bool
   block:
     - name: 🚫 Disable password authentication for SSH
       ansible.builtin.lineinfile:
@@ -53,6 +88,12 @@
         line: 'PermitRootLogin no'
         backup: true
       notify: Restart SSH
+
+- name: 📊 Setup (Gather Facts)
+  ansible.builtin.setup:
+  when: 
+    - ansible_connection != 'local'
+    - not (bootstrap | default(false) | bool)
 
 - name: 📦 Ensure base packages are installed
   ansible.builtin.package:

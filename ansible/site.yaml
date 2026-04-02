@@ -1,15 +1,12 @@
 ---
-- name: 🛠️ Access & User Setup
-  import_playbook: bootstrap.yml
-  tags: [ bootstrap ]
-
-- name: 🚀 System Hardening & Services
+- name: 🚀 Platform Foundation
   hosts: all
   become: true
+  gather_facts: false
   roles:
+    - role: base
+      tags: [base, bootstrap]
     - role: firewall
-      tags:
-        - firewall
+      tags: [firewall]
     - role: cluster
-      tags:
-        - cluster
+      tags: [cluster]
