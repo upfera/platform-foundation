@@ -5,17 +5,9 @@
   gather_facts: false
 
   tasks:
-    - name: Bootstrap Sequence
-      when: bootstrap | default(false) | bool
-      block:
-        - name: 🔍 Check Environment
-          ansible.builtin.assert:
-            that: ansible_connection != 'local'
-            fail_msg: "❌ Bootstrap blocked on local/WSL"
-
-        - name: 🏗️ Initialize System
-          ansible.builtin.include_role:
-            name: bootstrap
+    - name: 🏗️ Initialize System
+      ansible.builtin.include_role:
+        name: bootstrap
 
     - name: ⚙️ Deploy Cluster Role
       ansible.builtin.include_role:

@@ -1,19 +1,26 @@
 INVENTORY = ansible/inventories/inventory.yaml
-ANSIBLE   = ./ansiblew -i $(INVENTORY)
+PLAYBOOK  = ansible/site.yaml
+
+# Local execution uses the wrapper
+ANSIBLE_LOCAL = ./ansiblew -i $(INVENTORY)
+
+# Remote execution (VPS) uses ansible-playbook directly
+# Assumes ansible-playbook is already in the environment (e.g., GitHub Actions or pre-installed)
+ANSIBLE_VPS   = ansible-playbook -i $(INVENTORY)
 
 .PHONY: local vps bootstrap-vps lint syntax-check
 
 local:
-	$(ANSIBLE) -l local ansible/site.yaml
+	$(ANSIBLE_LOCAL) -l local $(PLAYBOOK)
 
 vps:
-	$(ANSIBLE) -l vps ansible/site.yaml
+	$(ANSIBLE_VPS) -l vps $(PLAYBOOK)
 
 bootstrap-vps:
-	$(ANSIBLE) -l vps ansible/site.yaml -e "bootstrap=true"
+	$(ANSIBLE_VPS) -l vps $(PLAYBOOK) -e "bootstrap=true"
 
 lint:
-	ansible-lint ansible/site.yaml
+	ansible-lint $(PLAYBOOK)
 
 syntax-check:
-	$(ANSIBLE) --syntax-check ansible/site.yaml
+	$(ANSIBLE_VPS) --syntax-check $(PLAYBOOK)

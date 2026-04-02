@@ -16,14 +16,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⚙️ Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.13'
+          cache: 'pip'
 
       - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ansible
+          pip install -r requirements.txt
 
       - name: 🔑 Setup SSH Agent (Memory-Only)
         run: |
