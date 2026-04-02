@@ -1,6 +1,6 @@
 ---
 - name: 🛠️ Access & User Setup
-  import_playbook: playbooks/bootstrap.yml
+  import_playbook: bootstrap.yml
   tags: [ bootstrap ]
 
 - name: 🚀 System Hardening & Services
