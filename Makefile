@@ -1,8 +1,6 @@
 INVENTORY = ansible/inventories/inventory.yaml
 ANSIBLE   = ./ansiblew -i $(INVENTORY)
 
-export ANSIBLE_SSH_ARGS="-o IdentitiesOnly=yes"
-
 .PHONY: local vps bootstrap-vps lint syntax-check
 
 local:

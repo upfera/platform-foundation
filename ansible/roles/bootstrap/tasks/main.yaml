@@ -26,12 +26,10 @@
     mode: '0700'
 
 - name: 🔑 Copy SSH public key to authorized_keys
-  ansible.builtin.copy:
-    src: "{{ ssh_pub_key_path }}"
-    dest: "/home/{{ initial_user }}/.ssh/authorized_keys"
-    owner: "{{ initial_user }}"
-    group: "{{ initial_user }}"
-    mode: '0600'
+  ansible.builtin.authorized_key:
+    user: "{{ initial_user }}"
+    state: present
+    key: "{{ lookup('file', ssh_pub_key_path) }}"
 
 - name: 🚫 Disable password authentication for SSH
   ansible.builtin.lineinfile:
