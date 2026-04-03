@@ -1,6 +1,5 @@
 all:
   vars:
-    ansible_become: false
     ansible_user: ops
 
   children:

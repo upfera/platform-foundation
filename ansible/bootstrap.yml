@@ -1,7 +1,7 @@
 ---
 - name: 🐣 Birth Stage - Bootstrap VPS
   hosts: vps
-  become: true
+  become: "{{ ansible_user != 'root' }}"
   gather_facts: false
   tasks:
     - name: 🛠️ Ensure 'ops' user is configured
