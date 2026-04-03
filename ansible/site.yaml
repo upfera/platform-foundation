@@ -12,18 +12,15 @@
       ansible.builtin.include_role:
         name: ssh_hardening
       tags: [ security ]
-      become: true
       when: (ansible_connection | default('ssh')) != 'local'
 
     - name: 🔥 Configure firewall
       ansible.builtin.include_role:
         name: firewall
       tags: [ security ]
-      become: true
       when: (ansible_connection | default('ssh')) != 'local'
 
     - name: 🧩 Cluster setup
       ansible.builtin.include_role:
         name: cluster
       tags: [cluster]
-      become: true
