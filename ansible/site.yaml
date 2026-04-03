@@ -4,6 +4,8 @@
   gather_facts: false
   tasks:
     - name: 🔍 Detect connection user
+      # On VPS, we first try connecting as the target ops user.
+      # If it fails (e.g., initial run), we fall back to root to perform bootstrap.
       block:
         - name: Check if target user is available
           ansible.builtin.wait_for_connection:
@@ -20,52 +22,39 @@
             ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
       when: (ansible_connection | default('ssh')) != 'local'
 
-    - name: 🛠️ Bootstrap system
+    - name: 🛠️ Setup ops user
+      # This role creates the ops user and ensures sudo/ssh access.
+      # It runs only on VPS and uses root if ops user is not yet available.
       ansible.builtin.include_role:
-        name: bootstrap
+        name: ops_user
       when: (ansible_connection | default('ssh')) != 'local'
       vars:
         ansible_become: "{{ ansible_user != 'root' }}"
         ansible_become_method: sudo
 
-    - name: 👤 Ensure target user is used for subsequent plays
+    - name: 👤 Ensure ops user is used for subsequent tasks
+      # After the ops user is created/verified, we switch to it for all further tasks.
       ansible.builtin.set_fact:
         ansible_user: "{{ target_user }}"
       when: (ansible_connection | default('ssh')) != 'local'
 
-    - name: 👀 Display current user
-      command: whoami
-      register: whoami_result
+    - name: 📊 Gather facts
+      ansible.builtin.setup:
+      become: true
+      when: (ansible_connection | default('ssh')) != 'local'
 
-    - debug:
-        var: whoami_result.stdout
+    - name: 🔐 Security hardening
+      ansible.builtin.include_role:
+        name: "{{ item }}"
+      loop:
+        - ssh_hardening
+        - firewall
+      tags: [security]
+      become: true
+      when: (ansible_connection | default('ssh')) != 'local'
 
-#    - name: 📊 Gather facts
-#      ansible.builtin.setup:
-#      vars:
-#        ansible_become: "{{ ansible_connection != 'local' }}"
-#        ansible_become_method: sudo
-#
-#    - name: 🔐 Security hardening
-#      block:
-#        - name: Run SSH hardening
-#          ansible.builtin.import_role:
-#            name: ssh_hardening
-#        - name: Run Firewall configuration
-#          ansible.builtin.import_role:
-#            name: firewall
-#      tags: [security]
-#      when: ansible_connection != 'local'
-#      become: true
-#      vars:
-#        ansible_become: true
-#        ansible_become_method: sudo
-#
-#    - name: 🧩 Cluster setup
-#      ansible.builtin.import_role:
-#        name: cluster
-#      tags: [cluster]
-#      become: true
-#      vars:
-#        ansible_become: true
-#        ansible_become_method: sudo
+    - name: 🧩 Cluster setup
+      ansible.builtin.include_role:
+        name: cluster
+      tags: [cluster]
+      become: true
