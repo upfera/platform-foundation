@@ -11,14 +11,6 @@ on:
         options:
           - ops
           - root
-      bootstrap:
-        description: 'Whether to run bootstrap'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
 
 env:
   VPS_IP_1: ${{ vars.VPS_IP_1 }}
