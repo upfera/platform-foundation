@@ -4,6 +4,10 @@
   become: "{{ ansible_user != 'root' }}"
   gather_facts: false
   tasks:
+    - name: 📋 Log current user
+      ansible.builtin.debug:
+        msg: "Current user: {{ ansible_user }}"
+
     - name: 🛠️ Ensure 'ops' user is configured
       ansible.builtin.import_role:
         name: ops_user
