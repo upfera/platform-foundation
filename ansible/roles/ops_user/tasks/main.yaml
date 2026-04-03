@@ -1,3 +1,20 @@
+- name: 🔍 Detect connection user
+  block:
+    - name: Check if target user is available
+      ansible.builtin.wait_for_connection:
+        timeout: 3
+      vars:
+        ansible_user: "{{ target_user }}"
+        ansible_become: false
+      register: ops_check
+      ignore_errors: true
+      no_log: true
+
+    - name: Set connection user fallback to root
+      ansible.builtin.set_fact:
+        ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
+  when: (ansible_connection | default('ssh')) != 'local'
+
 - name: 👤 Ensure target user exists and in sudo group
   ansible.builtin.user:
     name: "{{ target_user }}"
@@ -6,6 +23,8 @@
     state: present
     shell: /bin/bash
     create_home: true
+  become: "{{ ansible_user != 'root' }}"
+  when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
@@ -17,8 +36,17 @@
     mode: '0440'
     line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
+  become: "{{ ansible_user != 'root' }}"
+  when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ target_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"
+  become: "{{ ansible_user != 'root' }}"
+  when: (ansible_connection | default('ssh')) != 'local'
+
+- name: 👤 Ensure ops user is used for subsequent tasks
+  ansible.builtin.set_fact:
+    ansible_user: "{{ target_user }}"
+  when: (ansible_connection | default('ssh')) != 'local'

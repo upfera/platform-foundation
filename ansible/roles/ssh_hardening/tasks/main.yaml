@@ -16,13 +16,14 @@
         backup: true
       notify: Restart SSH
 
-    - name: 🚫 Disable root SSH login
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^PermitRootLogin'
-        line: 'PermitRootLogin no'
-        backup: true
-      notify: Restart SSH
+# DONT TOUCH THIS, WILL ENABLE LATER
+#    - name: 🚫 Disable root SSH login
+#      ansible.builtin.lineinfile:
+#        path: /etc/ssh/sshd_config
+#        regexp: '^PermitRootLogin'
+#        line: 'PermitRootLogin no'
+#        backup: true
+#      notify: Restart SSH
 
     - name: 🔑 Ensure public key is present for target user
       ansible.builtin.authorized_key:

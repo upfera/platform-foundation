@@ -1,55 +1,24 @@
 ---
-- name: 🚀 Universal Infrastructure Flow
+- name: 🚀 Platform Foundation
   hosts: all
   gather_facts: false
   tasks:
-    - name: 🔍 Detect connection user
-      # On VPS, we first try connecting as the target ops user.
-      # If it fails (e.g., initial run), we fall back to root to perform bootstrap.
-      block:
-        - name: Check if target user is available
-          ansible.builtin.wait_for_connection:
-            timeout: 3
-          vars:
-            ansible_user: "{{ target_user }}"
-            ansible_become: false
-          register: ops_check
-          ignore_errors: true
-          no_log: true
-
-        - name: Set connection user fallback to root
-          ansible.builtin.set_fact:
-            ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
-      when: (ansible_connection | default('ssh')) != 'local'
-
     - name: 🛠️ Setup ops user
-      # This role creates the ops user and ensures sudo/ssh access.
-      # It runs only on VPS and uses root if ops user is not yet available.
       ansible.builtin.include_role:
         name: ops_user
       when: (ansible_connection | default('ssh')) != 'local'
-      vars:
-        ansible_become: "{{ ansible_user != 'root' }}"
-        ansible_become_method: sudo
 
-    - name: 👤 Ensure ops user is used for subsequent tasks
-      # After the ops user is created/verified, we switch to it for all further tasks.
-      ansible.builtin.set_fact:
-        ansible_user: "{{ target_user }}"
-      when: (ansible_connection | default('ssh')) != 'local'
-
-    - name: 📊 Gather facts
-      ansible.builtin.setup:
+    - name: 🔐 Harden SSH
+      ansible.builtin.include_role:
+        name: ssh_hardening
+      tags: [ security ]
       become: true
       when: (ansible_connection | default('ssh')) != 'local'
 
-    - name: 🔐 Security hardening
+    - name: 🔥 Configure firewall
       ansible.builtin.include_role:
-        name: "{{ item }}"
-      loop:
-        - ssh_hardening
-        - firewall
-      tags: [security]
+        name: firewall
+      tags: [ security ]
       become: true
       when: (ansible_connection | default('ssh')) != 'local'
 
