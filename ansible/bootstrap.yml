@@ -1,6 +1,7 @@
 ---
 - name: 🐣 Birth Stage - Bootstrap VPS
   hosts: vps
+  become: true
   gather_facts: false
   tasks:
     - name: 🛠️ Ensure 'ops' user is configured
