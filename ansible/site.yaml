@@ -11,12 +11,14 @@
           vars:
             ansible_user: "{{ target_user }}"
             ansible_become: false
+            ansible_ssh_private_key_file: "{{ ansible_user_private_key_file }}"
           register: ops_check
           ignore_errors: true
 
         - name: Set connection user fallback to root
           ansible.builtin.set_fact:
             ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
+            ansible_ssh_private_key_file: "{{ (ops_check is failed) | ternary(ansible_root_private_key_file | default(omit), ansible_user_private_key_file) }}"
       when: ansible_connection != 'local'
 
     - name: 🛠️ Bootstrap system
@@ -30,6 +32,7 @@
     - name: 👤 Ensure target user is used for subsequent plays
       ansible.builtin.set_fact:
         ansible_user: "{{ target_user }}"
+        ansible_ssh_private_key_file: "{{ ansible_user_private_key_file }}"
       when: ansible_connection != 'local'
 
     - name: 📊 Gather facts
