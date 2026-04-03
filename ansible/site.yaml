@@ -29,7 +29,7 @@
 
     - name: 🛠️ Bootstrap system
       ansible.builtin.include_role:
-        name: ops-user
+        name: ops_user
       when: (ansible_connection | default('ssh')) != 'local'
       vars:
         ansible_become: "{{ ansible_user != 'root' }}"
