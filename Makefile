@@ -3,7 +3,7 @@ PLAYBOOK  = ansible/site.yaml
 
 ANSIBLE_WRAPPER = ./ansiblew -i $(INVENTORY)
 
-.PHONY: local vps base firewall cluster lint syntax-check
+.PHONY: local vps lint syntax-check
 
 local:
 	$(ANSIBLE_WRAPPER) -l local --tags cluster $(PLAYBOOK)

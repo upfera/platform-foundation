@@ -10,9 +10,9 @@
             timeout: 3
           vars:
             ansible_user: "{{ target_user }}"
+            ansible_become: false
           register: ops_check
           ignore_errors: true
-          become: false
 
         - name: Set connection user fallback to root
           ansible.builtin.set_fact:
@@ -20,10 +20,12 @@
       when: ansible_connection != 'local'
 
     - name: 🛠️ Bootstrap system
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: bootstrap
       when: ansible_connection != 'local'
-      become: "{{ ansible_user != 'root' }}"
+      vars:
+        ansible_become: "{{ ansible_user != 'root' }}"
+        ansible_become_method: sudo
 
     - name: 👤 Ensure target user is used for subsequent plays
       ansible.builtin.set_fact:
@@ -32,6 +34,9 @@
 
     - name: 📊 Gather facts
       ansible.builtin.setup:
+      vars:
+        ansible_become: "{{ ansible_connection != 'local' }}"
+        ansible_become_method: sudo
 
     - name: 🔐 Security hardening
       block:
@@ -44,9 +49,15 @@
       tags: [security]
       when: ansible_connection != 'local'
       become: true
+      vars:
+        ansible_become: true
+        ansible_become_method: sudo
 
     - name: 🧩 Cluster setup
       ansible.builtin.import_role:
         name: cluster
       tags: [cluster]
       become: true
+      vars:
+        ansible_become: true
+        ansible_become_method: sudo
