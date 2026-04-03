@@ -1,12 +1,9 @@
 ---
 - name: 🚀 Platform Foundation
-  hosts: all
-  become: true
-  gather_facts: false
-  roles:
-    - role: base
-      tags: [base, bootstrap]
-    - role: firewall
-      tags: [firewall]
-    - role: cluster
-      tags: [cluster]
+  tasks:
+    - debug:
+        msg: "🚀 Starting full infrastructure deployment"
+
+- import_playbook: 01-initial-setup.yml
+- import_playbook: 02-security.yml
+- import_playbook: 03-cluster.yaml
