@@ -32,32 +32,39 @@
         ansible_user: "{{ target_user }}"
       when: ansible_connection != 'local'
 
-    - name: 📊 Gather facts
-      ansible.builtin.setup:
-      vars:
-        ansible_become: "{{ ansible_connection != 'local' }}"
-        ansible_become_method: sudo
+    - name: 👀 Display current user
+      command: whoami
+      register: whoami_result
 
-    - name: 🔐 Security hardening
-      block:
-        - name: Run SSH hardening
-          ansible.builtin.import_role:
-            name: ssh_hardening
-        - name: Run Firewall configuration
-          ansible.builtin.import_role:
-            name: firewall
-      tags: [security]
-      when: ansible_connection != 'local'
-      become: true
-      vars:
-        ansible_become: true
-        ansible_become_method: sudo
+    - debug:
+        var: whoami_result.stdout
 
-    - name: 🧩 Cluster setup
-      ansible.builtin.import_role:
-        name: cluster
-      tags: [cluster]
-      become: true
-      vars:
-        ansible_become: true
-        ansible_become_method: sudo
+#    - name: 📊 Gather facts
+#      ansible.builtin.setup:
+#      vars:
+#        ansible_become: "{{ ansible_connection != 'local' }}"
+#        ansible_become_method: sudo
+#
+#    - name: 🔐 Security hardening
+#      block:
+#        - name: Run SSH hardening
+#          ansible.builtin.import_role:
+#            name: ssh_hardening
+#        - name: Run Firewall configuration
+#          ansible.builtin.import_role:
+#            name: firewall
+#      tags: [security]
+#      when: ansible_connection != 'local'
+#      become: true
+#      vars:
+#        ansible_become: true
+#        ansible_become_method: sudo
+#
+#    - name: 🧩 Cluster setup
+#      ansible.builtin.import_role:
+#        name: cluster
+#      tags: [cluster]
+#      become: true
+#      vars:
+#        ansible_become: true
+#        ansible_become_method: sudo
