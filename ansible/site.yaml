@@ -20,6 +20,13 @@
             ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
       when: (ansible_connection | default('ssh')) != 'local'
 
+    - name: 👀 Display current user before auth
+      command: whoami
+      register: whoami_result
+
+    - debug:
+        var: whoami_result.stdout
+
     - name: 🛠️ Bootstrap system
       ansible.builtin.include_role:
         name: bootstrap
