@@ -5,17 +5,21 @@
       vars:
         ansible_user: "{{ target_user }}"
         ansible_become: true
+        ansible_become_method: sudo
+        ansible_become_user: root
       register: ops_check
       ignore_errors: true
       no_log: true
 
-    - name: Set connection user fallback to root
+    - name: 👤 Set connection user fallback to root
       ansible.builtin.set_fact:
         ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
   when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 🛠️ Provision ops user
   become: true
+  become_method: sudo
+  become_user: root
   block:
     - name: 👤 Ensure target user exists and in sudo group
       ansible.builtin.user:
