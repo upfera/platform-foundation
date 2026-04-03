@@ -13,16 +13,17 @@
             ansible_become: false
           register: ops_check
           ignore_errors: true
+          no_log: true
 
         - name: Set connection user fallback to root
           ansible.builtin.set_fact:
             ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
-      when: ansible_connection != 'local'
+      when: (ansible_connection | default('ssh')) != 'local'
 
     - name: 🛠️ Bootstrap system
       ansible.builtin.include_role:
         name: bootstrap
-      when: ansible_connection != 'local'
+      when: (ansible_connection | default('ssh')) != 'local'
       vars:
         ansible_become: "{{ ansible_user != 'root' }}"
         ansible_become_method: sudo
@@ -30,7 +31,7 @@
     - name: 👤 Ensure target user is used for subsequent plays
       ansible.builtin.set_fact:
         ansible_user: "{{ target_user }}"
-      when: ansible_connection != 'local'
+      when: (ansible_connection | default('ssh')) != 'local'
 
     - name: 👀 Display current user
       command: whoami
