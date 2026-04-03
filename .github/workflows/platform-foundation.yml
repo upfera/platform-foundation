@@ -20,15 +20,14 @@ jobs:
 
       - name: 🔑 Setup SSH Keys
         env:
-          OPS_PRIVATE_KEY: ${{ secrets.VPS_OPS_PRIVATE_KEY }}
-          ROOT_PRIVATE_KEY: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
           OPS_PUBLIC_KEY: ${{ secrets.VPS_OPS_PUBLIC_KEY }}
         run: |
-          printf "%s" "$OPS_PRIVATE_KEY" > ops_private_key
-          printf "%s" "$ROOT_PRIVATE_KEY" > root_private_key
-          printf "%s" "$OPS_PUBLIC_KEY" > public_key
+          eval $(ssh-agent -s)
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
           
-          chmod 600 ops_private_key root_private_key
+          printf "%s" "$OPS_PUBLIC_KEY" > public_key
 
       - name: ⚡ Run Ansible playbook
         env:
