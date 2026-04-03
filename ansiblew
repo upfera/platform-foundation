@@ -16,7 +16,7 @@ pip install -q --upgrade pip
 pip install -q -r "$ROOT/requirements.txt"
 
 export ANSIBLE_CONFIG="$ROOT/ansible.cfg"
-ansible-galaxy collection install -q -r "$ROOT/requirements.yaml" -p ./collections
+ansible-galaxy collection install -r "$ROOT/requirements.yaml" -p ./collections
 
 if [[ "$1" == ansible-* ]]; then
   exec "$@"
