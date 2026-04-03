@@ -1,0 +1,8 @@
+---
+- name: 🐣 Birth Stage - Bootstrap VPS
+  hosts: vps
+  gather_facts: false
+  tasks:
+    - name: 🛠️ Ensure 'ops' user is configured
+      ansible.builtin.import_role:
+        name: ops_user

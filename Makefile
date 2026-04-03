@@ -1,18 +1,18 @@
 INVENTORY = ansible/inventories/inventory.yaml
-PLAYBOOK  = ansible/site.yaml
+BOOTSTRAP = ansible/bootstrap.yml
+SITE      = ansible/site.yaml
+WRAPPER   = ./ansiblew
 
-ANSIBLE_WRAPPER = ./ansiblew -i $(INVENTORY)
+.PHONY: bootstrap deploy local lint
 
-.PHONY: local vps lint syntax-check
+bootstrap:
+	$(WRAPPER) -i $(INVENTORY) $(BOOTSTRAP)
+
+deploy:
+	$(WRAPPER) -i $(INVENTORY) $(SITE)
 
 local:
-	$(ANSIBLE_WRAPPER) -l local --tags cluster $(PLAYBOOK)
-
-vps:
-	$(ANSIBLE_WRAPPER) -l vps -e "ansible_user_public_key_file=$(PUB_KEY)" $(PLAYBOOK)
+	$(WRAPPER) -i $(INVENTORY) -l local $(SITE)
 
 lint:
-	ansible-lint $(PLAYBOOK)
-
-syntax-check:
-	$(ANSIBLE_WRAPPER) --syntax-check $(PLAYBOOK)
+	$(WRAPPER) ansible-lint .

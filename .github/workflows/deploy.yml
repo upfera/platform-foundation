@@ -1,0 +1,32 @@
+name: 🚀 Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Checkout code
+        uses: actions/checkout@v6
+
+      - name: ⚙️ Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: 🔑 Setup SSH
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+
+      - name: ⚡ Run Site Playbook
+        env:
+          VPS_IP_1: ${{ vars.VPS_IP_1 }}
+          VPS_IP_2: ${{ vars.VPS_IP_2 }}
+          VPS_IP_3: ${{ vars.VPS_IP_3 }}
+        run: make deploy

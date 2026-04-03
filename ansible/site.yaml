@@ -1,78 +1,19 @@
 ---
-- name: 🚀 Universal Infrastructure Flow
+- name: 🛰️ Life Stage - Infrastructure Management
   hosts: all
-  gather_facts: false
+  become: true
   tasks:
-    - name: 🔍 Detect connection user
+    - name: 🔐 Security hardening
       block:
-        - name: Check if target user is available
-          ansible.builtin.wait_for_connection:
-            timeout: 3
-          vars:
-            ansible_user: "{{ target_user }}"
-            ansible_become: false
-          register: ops_check
-          ignore_errors: true
-          no_log: true
+        - name: Run SSH hardening
+          ansible.builtin.import_role:
+            name: ssh_hardening
+        - name: Run Firewall configuration
+          ansible.builtin.import_role:
+            name: firewall
+      tags: [security]
 
-        - name: Set connection user fallback to root
-          ansible.builtin.set_fact:
-            ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
-      when: (ansible_connection | default('ssh')) != 'local'
-
-    - name: 👀 Display current user before auth
-      command: whoami
-      register: whoami_result
-
-    - debug:
-        var: whoami_result.stdout
-
-    - name: 🛠️ Bootstrap system
-      ansible.builtin.include_role:
-        name: ops_user
-      when: (ansible_connection | default('ssh')) != 'local'
-      vars:
-        ansible_become: "{{ ansible_user != 'root' }}"
-        ansible_become_method: sudo
-
-    - name: 👤 Ensure target user is used for subsequent plays
-      ansible.builtin.set_fact:
-        ansible_user: "{{ target_user }}"
-      when: (ansible_connection | default('ssh')) != 'local'
-
-    - name: 👀 Display current user
-      command: whoami
-      register: whoami_result
-
-    - debug:
-        var: whoami_result.stdout
-
-#    - name: 📊 Gather facts
-#      ansible.builtin.setup:
-#      vars:
-#        ansible_become: "{{ ansible_connection != 'local' }}"
-#        ansible_become_method: sudo
-#
-#    - name: 🔐 Security hardening
-#      block:
-#        - name: Run SSH hardening
-#          ansible.builtin.import_role:
-#            name: ssh_hardening
-#        - name: Run Firewall configuration
-#          ansible.builtin.import_role:
-#            name: firewall
-#      tags: [security]
-#      when: ansible_connection != 'local'
-#      become: true
-#      vars:
-#        ansible_become: true
-#        ansible_become_method: sudo
-#
-#    - name: 🧩 Cluster setup
-#      ansible.builtin.import_role:
-#        name: cluster
-#      tags: [cluster]
-#      become: true
-#      vars:
-#        ansible_become: true
-#        ansible_become_method: sudo
+    - name: 🧩 Cluster setup
+      ansible.builtin.import_role:
+        name: cluster
+      tags: [cluster]

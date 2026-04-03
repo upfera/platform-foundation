@@ -1,5 +1,4 @@
 - name: 🔐 Configure SSH hardening
-  become: true
   block:
     - name: 🚫 Disable password authentication for SSH
       ansible.builtin.lineinfile:
@@ -8,7 +7,6 @@
         line: 'PasswordAuthentication no'
         backup: true
       notify: Restart SSH
-      become: true
 
     - name: ✅ Enable PubkeyAuthentication for SSH
       ansible.builtin.lineinfile:
@@ -17,20 +15,11 @@
         line: 'PubkeyAuthentication yes'
         backup: true
       notify: Restart SSH
-      become: true
 
-    - name: 🔑 Ensure public key is present for target user
-      ansible.builtin.authorized_key:
-        user: "{{ target_user }}"
-        key: "{{ lookup('file', ansible_user_public_key_file) }}"
-        state: present
-      become: true
-
-    # DONT TOUCH THIS, WILL ENABLE LATER
-    #    - name: 🚫 Disable root SSH login
-    #      ansible.builtin.lineinfile:
-    #        path: /etc/ssh/sshd_config
-    #        regexp: '^PermitRootLogin'
-    #        line: 'PermitRootLogin no'
-    #        backup: true
-    #      notify: Restart SSH
+#    - name: 🚫 Disable root SSH login
+#      ansible.builtin.lineinfile:
+#        path: /etc/ssh/sshd_config
+#        regexp: '^PermitRootLogin'
+#        line: 'PermitRootLogin no'
+#        backup: true
+#      notify: Restart SSH

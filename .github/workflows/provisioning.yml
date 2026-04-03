@@ -1,12 +1,19 @@
-name: 🚀 Platform Foundation
+name: 🐣 Provision VPS (Bootstrap)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      ssh_user:
+        description: 'User to connect with (root or ops)'
+        required: true
+        default: 'root'
+        type: choice
+        options:
+          - ops
+          - root
 
 jobs:
-  platform-foundation:
+  provision:
     runs-on: ubuntu-latest
     steps:
       - name: 🔍 Checkout code
@@ -19,21 +26,21 @@ jobs:
           cache: 'pip'
 
       - name: 🔑 Setup SSH
-        env:
-          OPS_PUBLIC_KEY: ${{ secrets.VPS_OPS_PUBLIC_KEY }}
         run: |
           eval $(ssh-agent -s)
-          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
           
-          printf "%s" "$OPS_PUBLIC_KEY" > public_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
 
-      - name: ⚡ Run Ansible playbook
+      - name: ⚡ Run Bootstrap Playbook
         env:
           VPS_IP_1: ${{ vars.VPS_IP_1 }}
           VPS_IP_2: ${{ vars.VPS_IP_2 }}
           VPS_IP_3: ${{ vars.VPS_IP_3 }}
         run: |
-          make vps \
-            PUB_KEY="${GITHUB_WORKSPACE}/public_key"
+          make bootstrap \
+            SSH_USER=${{ github.event.inputs.ssh_user }} \
+            PUB_KEY=~/.ssh/id_rsa.pub

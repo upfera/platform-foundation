@@ -6,6 +6,7 @@
     state: present
     shell: /bin/bash
     create_home: true
+  become: true
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
@@ -17,8 +18,10 @@
     mode: '0440'
     line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
+  become: true
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ target_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"
+  become: true
