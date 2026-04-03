@@ -1,24 +1,27 @@
-- name: 🔥 Setup UFW firewall rules
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port | string }}"
-  loop:
-    - { port: 22, label: "SSH" }
-    - { port: 80, label: "HTTP" }
-    - { port: 443, label: "HTTPS" }
-    - { port: 16443, label: "KubeAPI" }
+- name: 🔥 Configure firewall
+  become: true
+  block:
+    - name: 🔥 Setup UFW firewall rules
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port | string }}"
+      loop:
+        - { port: 22, label: "SSH" }
+        - { port: 80, label: "HTTP" }
+        - { port: 443, label: "HTTPS" }
+        - { port: 16443, label: "KubeAPI" }
 
-- name: 🧱 Enable UFW firewall
-  community.general.ufw:
-    state: enabled
-    logging: 'on'
+    - name: 🧱 Enable UFW firewall
+      community.general.ufw:
+        state: enabled
+        logging: 'on'
 
-- name: 🧩 Allow UFW on cali+ interfaces (for Calico networking)
-  community.general.ufw:
-    rule: allow
-    interface_in: cali+
+    - name: 🧩 Allow UFW on cali+ interfaces (for Calico networking)
+      community.general.ufw:
+        rule: allow
+        interface_in: cali+
 
-- name: 🚀 Allow outbound traffic on cali+ interfaces
-  community.general.ufw:
-    rule: allow
-    interface_out: cali+
+    - name: 🚀 Allow outbound traffic on cali+ interfaces
+      community.general.ufw:
+        rule: allow
+        interface_out: cali+
