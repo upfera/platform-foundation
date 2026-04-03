@@ -1,11 +1,10 @@
 - name: 🔍 Detect connection user
   block:
-    - name: Check if target user is available
-      ansible.builtin.wait_for_connection:
-        timeout: 3
+    - name: Check if target user is available and has sudo
+      ansible.builtin.command: whoami
       vars:
         ansible_user: "{{ target_user }}"
-        ansible_become: false
+        ansible_become: true
       register: ops_check
       ignore_errors: true
       no_log: true
@@ -15,50 +14,33 @@
         ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
   when: (ansible_connection | default('ssh')) != 'local'
 
-- name: 👤 Ensure target user exists and in sudo group
-  ansible.builtin.user:
-    name: "{{ target_user }}"
-    groups: sudo
-    append: true
-    state: present
-    shell: /bin/bash
-    create_home: true
-  become: "{{ ansible_user != 'root' }}"
-  when: (ansible_connection | default('ssh')) != 'local'
+- name: 🛠️ Provision ops user
+  become: true
+  block:
+    - name: 👤 Ensure target user exists and in sudo group
+      ansible.builtin.user:
+        name: "{{ target_user }}"
+        groups: sudo
+        append: true
+        state: present
+        shell: /bin/bash
+        create_home: true
 
-- name: 👀 Debug current Ansible user info
-  debug:
-    msg:
-      - "ansible_user: {{ ansible_user | default('UNDEFINED') }}"
-      - "ansible_user_id: {{ ansible_user_id | default('UNDEFINED') }}"
-      - "remote_user (effective SSH user): {{ ansible_ssh_user | default('UNDEFINED') }}"
-      - "effective user (whoami via Ansible): {{ ansible_facts['user_id'] | default('UNDEFINED') }}"
+    - name: 🔓 Allow target user to use sudo without a password
+      ansible.builtin.lineinfile:
+        path: "/etc/sudoers.d/{{ target_user }}"
+        create: true
+        state: present
+        owner: root
+        group: root
+        mode: '0440'
+        line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"
 
-- name: 👀 Print whoami
-  command: whoami
-  register: whoami_result
-
-- debug:
-    msg: "Current remote user is: {{ whoami_result.stdout }}"
-
-- name: 🔓 Allow target user to use sudo without a password
-  ansible.builtin.lineinfile:
-    path: "/etc/sudoers.d/{{ target_user }}"
-    create: true
-    state: present
-    owner: root
-    group: root
-    mode: '0440'
-    line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
-    validate: "visudo -cf %s"
-  become: "true"
-  when: (ansible_connection | default('ssh')) != 'local'
-
-- name: 🔑 Copy SSH public key to authorized_keys
-  ansible.builtin.authorized_key:
-    user: "{{ target_user }}"
-    key: "{{ lookup('file', ansible_user_public_key_file) }}"
-  become: "{{ ansible_user != 'root' }}"
+    - name: 🔑 Copy SSH public key to authorized_keys
+      ansible.builtin.authorized_key:
+        user: "{{ target_user }}"
+        key: "{{ lookup('file', ansible_user_public_key_file) }}"
   when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 👤 Ensure ops user is used for subsequent tasks
