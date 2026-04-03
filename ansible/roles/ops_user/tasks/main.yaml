@@ -1,7 +1,8 @@
 - name: 🔍 Detect connection user
   block:
-    - name: Check if target user is available and has sudo
-      ansible.builtin.command: whoami
+    - name: 🔍 Check if target user is available and has sudo
+      ansible.builtin.wait_for_connection:
+        timeout: 3
       vars:
         ansible_user: "{{ target_user }}"
         ansible_become: true
@@ -17,9 +18,6 @@
   when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 🛠️ Provision ops user
-  become: true
-  become_method: sudo
-  become_user: root
   block:
     - name: 👤 Ensure target user exists and in sudo group
       ansible.builtin.user:
@@ -29,6 +27,9 @@
         state: present
         shell: /bin/bash
         create_home: true
+      become: "{{ ansible_user != 'root' }}"
+      become_method: sudo
+      become_user: root
 
     - name: 🔓 Allow target user to use sudo without a password
       ansible.builtin.lineinfile:
@@ -40,11 +41,17 @@
         mode: '0440'
         line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
         validate: "visudo -cf %s"
+      become: "{{ ansible_user != 'root' }}"
+      become_method: sudo
+      become_user: root
 
     - name: 🔑 Copy SSH public key to authorized_keys
       ansible.builtin.authorized_key:
         user: "{{ target_user }}"
         key: "{{ lookup('file', ansible_user_public_key_file) }}"
+      become: "{{ ansible_user != 'root' }}"
+      become_method: sudo
+      become_user: root
   when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 👤 Ensure ops user is used for subsequent tasks
