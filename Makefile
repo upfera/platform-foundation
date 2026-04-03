@@ -9,9 +9,10 @@ local:
 	$(ANSIBLE_WRAPPER) -l local --tags cluster $(PLAYBOOK)
 
 vps:
-	$(ANSIBLE_WRAPPER) -l vps \
-		-e "ansible_user_private_key_file=$(OPS_KEY)" \
-		-e "ansible_root_private_key_file=$(ROOT_KEY)" \
+	$(ANSIBLE_VPS) -l vps \
+		--private-key $(OPS_KEY) \
+		--private-key $(ROOT_KEY) \
+		--ssh-common-args='-o IdentitiesOnly=yes' \
 		-e "ansible_user_public_key_file=$(PUB_KEY)" \
 		$(PLAYBOOK)
 
