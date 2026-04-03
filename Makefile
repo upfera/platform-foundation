@@ -7,7 +7,7 @@ ANSIBLE_VPS   = ansible-playbook -i $(INVENTORY)
 .PHONY: local vps base firewall cluster lint syntax-check
 
 local:
-	$(ANSIBLE_LOCAL) -l local $(PLAYBOOK)
+	$(ANSIBLE_LOCAL) -l local --skip-tags bootstrap $(PLAYBOOK)
 
 vps:
 	$(ANSIBLE_VPS) -l vps $(PLAYBOOK)

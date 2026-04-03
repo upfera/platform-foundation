@@ -2,6 +2,23 @@ name: 🚀 Platform Foundation
 
 on:
   workflow_dispatch:
+    inputs:
+      ansible_user:
+        description: 'Ansible connection user'
+        required: true
+        default: 'ops'
+        type: choice
+        options:
+          - ops
+          - root
+      bootstrap:
+        description: 'Whether to run bootstrap'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 env:
   VPS_IP_1: ${{ vars.VPS_IP_1 }}
@@ -9,7 +26,7 @@ env:
   VPS_IP_3: ${{ vars.VPS_IP_3 }}
 
 jobs:
-  bootstrap:
+  platform-foundation:
     runs-on: ubuntu-latest
     steps:
       - name: 🔍 Checkout code
@@ -29,14 +46,14 @@ jobs:
 
       - name: 🔑 Setup SSH Keys
         run: |
-          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" > ops_key
-          chmod 600 ops_key
           echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" > root_key
           chmod 600 root_key
+          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" > ops_key
+          chmod 600 ops_key
 
-      - name: ⚡ Run Platform Foundation
+      - name: ⚡ Run Ansible playbook
         run: |
-          make vps
+          make vps ANSIBLE_USER=${{ inputs.ansible_user }}
         env:
-          OPS_PRIVATE_KEY_FILE: ops_key
           ROOT_PRIVATE_KEY_FILE: root_key
+          OPS_PRIVATE_KEY_FILE: ops_key

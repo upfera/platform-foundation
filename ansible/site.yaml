@@ -1,9 +1,4 @@
 ---
-- name: 🚀 Platform Foundation
-  tasks:
-    - debug:
-        msg: "🚀 Starting full infrastructure deployment"
-
-- import_playbook: 01-initial-setup.yml
+- import_playbook: 01-bootstrap.yml
 - import_playbook: 02-security.yml
 - import_playbook: 03-cluster.yaml
