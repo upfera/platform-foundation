@@ -37,7 +37,8 @@
 - name: 👀 Print whoami
   command: whoami
   register: whoami_result
-  debug:
+
+- debug:
     msg: "Current remote user is: {{ whoami_result.stdout }}"
 
 - name: 🔓 Allow target user to use sudo without a password
