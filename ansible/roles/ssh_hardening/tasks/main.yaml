@@ -1,7 +1,4 @@
 - name: 🔐 Configure SSH hardening
-  when:
-    - ansible_connection != 'local'
-    - bootstrap | default(false) | bool
   block:
     - name: 🚫 Disable password authentication for SSH
       ansible.builtin.lineinfile:

@@ -2,4 +2,3 @@
   ansible.builtin.service:
     name: ssh
     state: restarted
-  when: ansible_connection != 'local'

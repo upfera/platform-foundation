@@ -1,4 +1,52 @@
 ---
-- import_playbook: 01-bootstrap.yml
-- import_playbook: 02-security.yml
-- import_playbook: 03-cluster.yaml
+- name: 🚀 Universal Infrastructure Flow
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: 🔍 Detect connection user
+      block:
+        - name: Check if target user is available
+          ansible.builtin.wait_for_connection:
+            timeout: 3
+          vars:
+            ansible_user: "{{ target_user }}"
+          register: ops_check
+          ignore_errors: true
+          become: false
+
+        - name: Set connection user fallback to root
+          ansible.builtin.set_fact:
+            ansible_user: "{{ (ops_check is failed) | ternary('root', target_user) }}"
+      when: ansible_connection != 'local'
+
+    - name: 🛠️ Bootstrap system
+      ansible.builtin.import_role:
+        name: bootstrap
+      when: ansible_connection != 'local'
+      become: "{{ ansible_user != 'root' }}"
+
+    - name: 👤 Ensure target user is used for subsequent plays
+      ansible.builtin.set_fact:
+        ansible_user: "{{ target_user }}"
+      when: ansible_connection != 'local'
+
+    - name: 📊 Gather facts
+      ansible.builtin.setup:
+
+    - name: 🔐 Security hardening
+      block:
+        - name: Run SSH hardening
+          ansible.builtin.import_role:
+            name: ssh_hardening
+        - name: Run Firewall configuration
+          ansible.builtin.import_role:
+            name: firewall
+      tags: [security]
+      when: ansible_connection != 'local'
+      become: true
+
+    - name: 🧩 Cluster setup
+      ansible.builtin.import_role:
+        name: cluster
+      tags: [cluster]
+      become: true

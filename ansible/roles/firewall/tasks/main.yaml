@@ -7,26 +7,18 @@
     - { port: 80, label: "HTTP" }
     - { port: 443, label: "HTTPS" }
     - { port: 16443, label: "KubeAPI" }
-  when: ansible_connection != 'local'
 
 - name: 🧱 Enable UFW firewall
   community.general.ufw:
     state: enabled
     logging: 'on'
-  when: ansible_connection != 'local'
 
 - name: 🧩 Allow UFW on cali+ interfaces (for Calico networking)
   community.general.ufw:
     rule: allow
     interface_in: cali+
-  when: 
-    - ansible_connection != 'local'
-    - k8s_distro | default('') == 'k3s'
 
 - name: 🚀 Allow outbound traffic on cali+ interfaces
   community.general.ufw:
     rule: allow
     interface_out: cali+
-  when: 
-    - ansible_connection != 'local'
-    - k8s_distro | default('') == 'k3s'

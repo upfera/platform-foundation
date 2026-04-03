@@ -1,8 +1,0 @@
----
-- name: 🛠️ Initial VPS Setup
-  hosts: all
-  become: true
-  gather_facts: true
-  roles:
-    - role: bootstrap
-      tags: [bootstrap]

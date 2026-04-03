@@ -2,26 +2,10 @@ name: 🚀 Platform Foundation
 
 on:
   workflow_dispatch:
-    inputs:
-      ansible_user:
-        description: 'Ansible connection user'
-        required: true
-        default: 'ops'
-        type: choice
-        options:
-          - ops
-          - root
 
 jobs:
   platform-foundation:
     runs-on: ubuntu-latest
-    env:
-      VPS_IP_1: ${{ vars.VPS_IP_1 }}
-      VPS_IP_2: ${{ vars.VPS_IP_2 }}
-      VPS_IP_3: ${{ vars.VPS_IP_3 }}
-
-      CONNECTION_PRIVATE_KEY: ${{ inputs.ansible_user == 'root' && secrets.VPS_ROOT_PRIVATE_KEY || secrets.VPS_OPS_PRIVATE_KEY }}
-      OPS_PRIVATE_KEY: ${{ secrets.VPS_OPS_PRIVATE_KEY }}
     steps:
       - name: 🔍 Checkout code
         uses: actions/checkout@v4
@@ -32,24 +16,25 @@ jobs:
           python-version: '3.13'
           cache: 'pip'
 
-      - name: 📦 Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          ansible-galaxy collection install -r requirements.yaml -p ./collections
-
       - name: 🔑 Setup SSH Keys
+        env:
+          OPS_PRIVATE_KEY: ${{ secrets.VPS_OPS_PRIVATE_KEY }}
+          ROOT_PRIVATE_KEY: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
+          OPS_PUBLIC_KEY: ${{ secrets.VPS_OPS_PUBLIC_KEY }}
         run: |
-          printf "%s" "$CONNECTION_PRIVATE_KEY" > private_key
-          chmod 600 private_key
+          printf "%s" "$OPS_PRIVATE_KEY" > ops_private_key
+          printf "%s" "$ROOT_PRIVATE_KEY" > root_private_key
+          printf "%s" "$OPS_PUBLIC_KEY" > public_key
           
-          printf "%s" "$OPS_PRIVATE_KEY" > ops_key_temp
-          ssh-keygen -y -f ops_key_temp > public_key
-          rm ops_key_temp
+          chmod 600 ops_private_key root_private_key
 
       - name: ⚡ Run Ansible playbook
+        env:
+          VPS_IP_1: ${{ vars.VPS_IP_1 }}
+          VPS_IP_2: ${{ vars.VPS_IP_2 }}
+          VPS_IP_3: ${{ vars.VPS_IP_3 }}
         run: |
           make vps \
-            ANSIBLE_USER=${{ inputs.ansible_user }} \
-            ANSIBLE_USER_PRIVATE_KEY_FILE=private_key \
-            ANSIBLE_USER_PUBLIC_KEY_FILE=public_key
+            OPS_KEY=ops_private_key \
+            ROOT_KEY=root_private_key \
+            PUB_KEY=public_key

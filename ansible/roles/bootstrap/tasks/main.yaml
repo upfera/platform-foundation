@@ -6,9 +6,6 @@
     state: present
     shell: /bin/bash
     create_home: true
-  when: 
-    - ansible_connection != 'local'
-    - bootstrap | default(false) | bool
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
@@ -20,14 +17,8 @@
     mode: '0440'
     line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
-  when: 
-    - ansible_connection != 'local'
-    - bootstrap | default(false) | bool
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ target_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"
-  when: 
-    - ansible_connection != 'local'
-    - bootstrap | default(false) | bool
