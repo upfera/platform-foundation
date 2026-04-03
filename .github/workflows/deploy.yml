@@ -21,13 +21,13 @@ jobs:
           pip-install: -r requirements.txt
 
       - name: 📦 Cache Virtual Environment
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
 
       - name: 🌌 Cache Ansible Collections
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: collections
           key: collections-${{ runner.os }}-${{ hashFiles('requirements.yaml') }}
