@@ -1,7 +1,9 @@
 ---
 - name: 🐣 Birth Stage - Bootstrap VPS
   hosts: vps
-  become: "{{ ansible_user != 'root' }}"
+  become: true
+  vars:
+    bootstrap: true
   gather_facts: false
   tasks:
     - name: 📋 Log current user

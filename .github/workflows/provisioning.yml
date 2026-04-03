@@ -3,7 +3,7 @@ name: 🐣 Provision VPS (Bootstrap)
 on:
   workflow_dispatch:
     inputs:
-      ssh_user:
+      SSH_USER:
         description: 'User to connect with (root or ops)'
         required: true
         default: 'root'
@@ -40,7 +40,8 @@ jobs:
           VPS_IP_1: ${{ vars.VPS_IP_1 }}
           VPS_IP_2: ${{ vars.VPS_IP_2 }}
           VPS_IP_3: ${{ vars.VPS_IP_3 }}
+          ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
+          PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
-          make bootstrap \
-            SSH_USER=${{ github.event.inputs.ssh_user }} \
-            PUB_KEY=~/.ssh/id_rsa.pub
+          make bootstrap
+            

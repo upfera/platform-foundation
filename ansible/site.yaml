@@ -2,6 +2,8 @@
 - name: 🛰️ Life Stage - Infrastructure Management
   hosts: all
   become: true
+  vars:
+    bootstrap: false
   tasks:
     - name: 🔐 Security hardening
       block:
