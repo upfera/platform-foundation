@@ -38,14 +38,16 @@ jobs:
 
       - name: 🔑 Setup SSH Keys
         run: |
-          echo "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" > root_key
-          chmod 600 root_key
-          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" > ops_key
-          chmod 600 ops_key
+          if [ "${{ inputs.ansible_user }}" = "root" ]; then
+            printf "%s" "${{ secrets.VPS_ROOT_PRIVATE_KEY }}" > private_key
+          else
+            printf "%s" "${{ secrets.VPS_OPS_PRIVATE_KEY }}" > private_key
+          fi
+          
+          chmod 600 private_key
+          
+          ssh-keygen -y -f <(printf "%s" "${{ secrets.VPS_OPS_PRIVATE_KEY }}") > public_key
 
       - name: ⚡ Run Ansible playbook
         run: |
-          make vps ANSIBLE_USER=${{ inputs.ansible_user }}
-        env:
-          ROOT_PRIVATE_KEY_FILE: root_key
-          OPS_PRIVATE_KEY_FILE: ops_key
+          make vps ANSIBLE_USER=${{ inputs.ansible_user }} ANSIBLE_USER_PRIVATE_KEY_FILE=private_key ANSIBLE_USER_PUBLIC_KEY_FILE=public_key

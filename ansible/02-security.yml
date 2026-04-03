@@ -4,5 +4,7 @@
   become: true
   gather_facts: true
   roles:
+    - role: ssh_hardening
+      tags: [security]
     - role: firewall
-      tags: [firewall]
+      tags: [security]
