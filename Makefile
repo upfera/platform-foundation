@@ -10,9 +10,10 @@ local:
 
 vps:
 	$(ANSIBLE_VPS) -l vps \
+		-e "ansible_user=$(ANSIBLE_USER)" \
 		--private-key $(OPS_KEY) \
 		--private-key $(ROOT_KEY) \
-		--ssh-common-args='-o IdentitiesOnly=yes' \
+		--ssh-common-args='-o IdentitiesOnly=yes -o StrictHostKeyChecking=no' \
 		-e "ansible_user_public_key_file=$(PUB_KEY)" \
 		$(PLAYBOOK)
 
