@@ -26,6 +26,14 @@
   become: "{{ ansible_user != 'root' }}"
   when: (ansible_connection | default('ssh')) != 'local'
 
+- name: 👀 Debug current Ansible user info
+  debug:
+    msg:
+      - "ansible_user: {{ ansible_user | default('UNDEFINED') }}"
+      - "ansible_user_id: {{ ansible_user_id | default('UNDEFINED') }}"
+      - "remote_user (effective SSH user): {{ ansible_ssh_user | default('UNDEFINED') }}"
+      - "effective user (whoami via Ansible): {{ ansible_facts['user_id'] | default('UNDEFINED') }}"
+
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
     path: "/etc/sudoers.d/{{ target_user }}"
