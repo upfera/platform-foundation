@@ -34,6 +34,12 @@
       - "remote_user (effective SSH user): {{ ansible_ssh_user | default('UNDEFINED') }}"
       - "effective user (whoami via Ansible): {{ ansible_facts['user_id'] | default('UNDEFINED') }}"
 
+- name: 👀 Print whoami
+  command: whoami
+  register: whoami_result
+  debug:
+    msg: "Current remote user is: {{ whoami_result.stdout }}"
+
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
     path: "/etc/sudoers.d/{{ target_user }}"
@@ -44,7 +50,7 @@
     mode: '0440'
     line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
-  become: "{{ ansible_user != 'root' }}"
+  become: "true"
   when: (ansible_connection | default('ssh')) != 'local'
 
 - name: 🔑 Copy SSH public key to authorized_keys
