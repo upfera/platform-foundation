@@ -36,6 +36,4 @@ jobs:
           VPS_IP_3: ${{ vars.VPS_IP_3 }}
         run: |
           make vps \
-            OPS_KEY="${GITHUB_WORKSPACE}/ops_private_key" \
-            ROOT_KEY="${GITHUB_WORKSPACE}/root_private_key" \
             PUB_KEY="${GITHUB_WORKSPACE}/public_key"

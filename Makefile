@@ -9,7 +9,7 @@ local:
 	$(ANSIBLE_WRAPPER) -l local --tags cluster $(PLAYBOOK)
 
 vps:
-	$(ANSIBLE_WRAPPER) -l vps $(PLAYBOOK)
+	$(ANSIBLE_WRAPPER) -l vps -e "ansible_user_public_key_file=$(PUB_KEY)" $(PLAYBOOK)
 
 lint:
 	ansible-lint $(PLAYBOOK)
