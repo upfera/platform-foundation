@@ -1,24 +1,24 @@
 - name: 👤 Ensure target user exists and in sudo group
   ansible.builtin.user:
-    name: "{{ target_user }}"
+    name: "{{ deploy_user }}"
     groups: sudo
     append: true
-    state: present
     shell: /bin/bash
     create_home: true
+    state: present
 
 - name: 🔓 Allow target user to use sudo without a password
   ansible.builtin.lineinfile:
-    path: "/etc/sudoers.d/{{ target_user }}"
+    path: "/etc/sudoers.d/{{ deploy_user }}"
+    line: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL"
     create: true
     state: present
     owner: root
     group: root
     mode: '0440'
-    line: "{{ target_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
 
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
-    user: "{{ target_user }}"
+    user: "{{ deploy_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"

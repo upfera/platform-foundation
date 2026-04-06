@@ -1,5 +1,5 @@
 ---
-- name: 🛰️ Life Stage - Infrastructure Management
+- name: 🚀 Site
   hosts: all
   become: true
   vars:

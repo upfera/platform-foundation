@@ -1,4 +1,4 @@
-name: 🐣 Provision VPS (Bootstrap)
+name: 🧱 Provision VPS (Bootstrap)
 
 on:
   workflow_dispatch:

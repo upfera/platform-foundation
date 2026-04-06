@@ -1,15 +1,47 @@
----
-- name: 🐣 Birth Stage - Bootstrap VPS
+- name: 🧱 Bootstrap host
   hosts: vps
   become: true
-  vars:
-    bootstrap: true
   gather_facts: false
-  tasks:
-    - name: 📋 Log current user
-      ansible.builtin.debug:
-        msg: "Current user: {{ ansible_user }}"
 
-    - name: 🛠️ Ensure 'ops' user is configured
+  tasks:
+    - name: 📦 Install minimal required packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - ca-certificates
+        state: present
+        update_cache: true
+
+    - name: 🌍 Set system timezone to UTC
+      ansible.builtin.timezone:
+        name: 'UTC'
+
+    - name: 👤 Ensure ops user is present and configured
       ansible.builtin.import_role:
         name: ops_user
+
+    - name: 🔐 Install unattended-upgrades
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: ⚙️ Enable automatic security updates
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        mode: '0644'
+        owner: root
+        group: root
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+
+    - name: 🔎 Check if reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: 🔄 Reboot system after bootstrap if required
+      ansible.builtin.reboot:
+        msg: "Reboot after bootstrap provisioning"
+        reboot_timeout: 600
+      when: reboot_required.stat.exists

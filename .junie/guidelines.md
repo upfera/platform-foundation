@@ -135,7 +135,7 @@ roles/
 * Use configurable user:
 
 ```yaml
-target_user: ops
+deploy_user: ops
 ```
 
 * Bootstrap creates this user ONLY when needed

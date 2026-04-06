@@ -1,2 +1,2 @@
 # Target user for both local and VPS
-target_user: ops
+deploy_user: ops
