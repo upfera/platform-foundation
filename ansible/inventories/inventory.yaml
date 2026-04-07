@@ -12,10 +12,6 @@ all:
         k8s_distro: microk8s
 
     vps:
-      hosts:
-        # Provide a list of IPs in the VPS_IPS environment variable with line breaks, one per VPS
-        ansible_host: >-
-          {{ (lookup('env', 'VPS_IPS') | splitlines())[ (inventory_hostname | regex_replace('^vps-', '') | int) - 1 ] | trim }}
       vars:
         k8s_distro: k3s
         ansible_user_public_key_file: "{{ lookup('env', 'PUB_KEY_PATH') }}"
