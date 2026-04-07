@@ -53,9 +53,7 @@ jobs:
 
       - name: ⚡ Run Bootstrap Playbook
         env:
-          VPS_IP_1: ${{ vars.VPS_IP_1 }}
-          VPS_IP_2: ${{ vars.VPS_IP_2 }}
-          VPS_IP_3: ${{ vars.VPS_IP_3 }}
+          VPS_IPS: ${{ vars.VPS_IPS }}
           ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |

@@ -40,7 +40,5 @@ jobs:
 
       - name: ⚡ Run Site Playbook
         env:
-          VPS_IP_1: ${{ vars.VPS_IP_1 }}
-          VPS_IP_2: ${{ vars.VPS_IP_2 }}
-          VPS_IP_3: ${{ vars.VPS_IP_3 }}
+          VPS_IPS: ${{ vars.VPS_IPS }}
         run: make vps

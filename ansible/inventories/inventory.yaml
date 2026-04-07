@@ -13,12 +13,9 @@ all:
 
     vps:
       hosts:
-        vps-1:
-          ansible_host: "{{ lookup('env', 'VPS_IP_1') }}"
-        vps-2:
-          ansible_host: "{{ lookup('env', 'VPS_IP_2') }}"
-        vps-3:
-          ansible_host: "{{ lookup('env', 'VPS_IP_3') }}"
+        # Provide a list of IPs in the VPS_IPS environment variable with line breaks, one per VPS
+        ansible_host: >-
+          {{ (lookup('env', 'VPS_IPS') | splitlines())[ (inventory_hostname | regex_replace('^vps-', '') | int) - 1 ] | trim }}
       vars:
         k8s_distro: k3s
         ansible_user_public_key_file: "{{ lookup('env', 'PUB_KEY_PATH') }}"

@@ -1,2 +1,2 @@
-# Target user for both local and VPS
-deploy_user: ops
+# Default operations user for system management and deployments
+ops_user: ops
