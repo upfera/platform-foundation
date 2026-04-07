@@ -1,0 +1,17 @@
+---
+- name: 🧩 Cluster Setup
+  hosts: all
+  become: true
+
+  tasks:
+    - name: 📦 Install k3s
+      ansible.builtin.import_role:
+        name: k3s
+      when: k8s_distro == 'k3s'
+      tags: [cluster, k3s]
+
+    - name: 📦 Install MicroK8s
+      ansible.builtin.import_role:
+        name: microk8s
+      when: k8s_distro == 'microk8s'
+      tags: [cluster, microk8s]

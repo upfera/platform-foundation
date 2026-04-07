@@ -1,21 +1,6 @@
 ---
-- name: 🚀 Site
-  hosts: all
-  become: true
-  vars:
-    bootstrap: false
-  tasks:
-    - name: 🔐 Security hardening
-      block:
-        - name: Run SSH hardening
-          ansible.builtin.import_role:
-            name: ssh_hardening
-        - name: Run Firewall configuration
-          ansible.builtin.import_role:
-            name: firewall
-      tags: [security]
+- name: 🏗️ Infrastructure Lifecycle
+  ansible.builtin.import_playbook: 00-init.yml
 
-    - name: 🧩 Cluster setup
-      ansible.builtin.import_role:
-        name: cluster
-      tags: [cluster]
+- name: 🧩 Application Lifecycle
+  ansible.builtin.import_playbook: 10-cluster.yml
