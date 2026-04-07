@@ -4,6 +4,11 @@
   gather_facts: false
 
   tasks:
+    - name: 📦 Update and upgrade system
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
     - name: 📦 Install minimal required packages
       ansible.builtin.apt:
         name:
