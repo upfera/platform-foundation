@@ -1,7 +1,7 @@
 STATIC    = ansible/inventories/static.yaml
 DYNAMIC   = ansible/inventories/dynamic.yaml
-BOOTSTRAP = ansible/bootstrap.yml
-CLUSTER   = ansible/cluster.yml
+BOOTSTRAP = ansible/00-init.yml
+CLUSTER   = ansible/10-cluster.yml
 WRAPPER   = ./ansiblew
 
 .PHONY: bootstrap vps local lint
