@@ -38,7 +38,10 @@ jobs:
           echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
 
+      - name: 📝 Write Cluster Inventory
+        run: |
+          mkdir -p ansible/inventories
+          echo "${{ vars.CLUSTER_INVENTORY }}" > ansible/inventories/cluster.yaml
+
       - name: ⚡ Run Site Playbook
-        env:
-          VPS_IPS: ${{ vars.VPS_IPS }}
         run: make vps
