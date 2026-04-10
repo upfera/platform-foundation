@@ -4,13 +4,14 @@ import json
 import logging
 import sys
 
-from ansible.errors import AnsibleError
+RED = "\033[91m"
+RESET = "\033[0m"
 
 def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
     except KeyError:
-        raise AnsibleError(u'123123')
+        raise SystemExit(f"{RED}Error: BOOTSTRAP_HOSTS environment variable is required{RESET}")
 
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
     
