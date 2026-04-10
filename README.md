@@ -44,6 +44,6 @@ You can configure hosts and cluster settings using environment variables.
 
 ## Inventories
 
-- `ansible/inventories/k3s-inventory.yaml`: Dynamic inventory for k3s using environment variables.
-- `ansible/inventories/microk8s-inventory.yaml`: Dynamic inventory for MicroK8s using environment variables.
-- `ansible/inventories/inventory.yaml`: Localhost inventory.
+- `ansible/inventories/k3s.py`: Dynamic inventory for k3s using environment variables.
+- `ansible/inventories/microk8s.py`: Dynamic inventory for MicroK8s using environment variables.
+- `ansible/inventories/local.yaml`: Localhost inventory.

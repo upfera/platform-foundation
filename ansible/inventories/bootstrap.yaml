@@ -1,4 +1,0 @@
----
-bootstrap:
-  hosts:
-    "{{ lookup('env', 'BOOTSTRAP_HOSTS') | split(',') | list | to_yaml | from_yaml }}":

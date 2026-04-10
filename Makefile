@@ -1,9 +1,9 @@
 WRAPPER 		:= ./ansiblew
 
 LOCAL_INV 		:= ansible/inventories/local.yaml
-BOOTSTRAP_INV	:= ansible/inventories/bootstrap.yaml
-K3S_INV 		:= ansible/inventories/k3s_cluster.yaml
-MICROK8S_INV 	:= ansible/inventories/microk8s_cluster.yaml
+BOOTSTRAP_INV	:= ansible/inventories/bootstrap.py
+K3S_INV 		:= ansible/inventories/k3s.py
+MICROK8S_INV 	:= ansible/inventories/microk8s.py
 
 .PHONY: k3s microk8s local-k3s local-microk8s bootstrap lint
 
