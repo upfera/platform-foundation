@@ -1,6 +1,0 @@
----
-- name: 🏗️ Infrastructure Lifecycle
-  ansible.builtin.import_playbook: 00-init.yml
-
-- name: 🧩 Application Lifecycle
-  ansible.builtin.import_playbook: 10-cluster.yml

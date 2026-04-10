@@ -1,0 +1,5 @@
+k8s_distro: k3s
+k8s_mode: cluster
+k3s_version: v1.31.12+k3s1
+token: "{{ lookup('env', 'K3S_TOKEN') }}"
+api_endpoint: "{{ groups['server'][0] }}"

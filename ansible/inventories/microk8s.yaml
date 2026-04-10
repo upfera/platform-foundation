@@ -1,0 +1,4 @@
+---
+microk8s_cluster:
+  hosts:
+    "{{ lookup('env', 'MICROK8S_HOST') }}":

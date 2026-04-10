@@ -22,3 +22,4 @@
   ansible.builtin.authorized_key:
     user: "{{ ops_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"
+  when: ansible_user_public_key_file is defined and ansible_user_public_key_file != ""

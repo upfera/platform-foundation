@@ -1,2 +1,3 @@
-# Default operations user for system management and deployments
 ops_user: ops
+ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('ops', true) }}"
+ansible_user_public_key_file: "{{ lookup('env', 'PUB_KEY_PATH') | default('~/.ssh/id_rsa.pub', true) }}"

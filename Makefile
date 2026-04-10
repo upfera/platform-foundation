@@ -1,19 +1,26 @@
-INVENTORY          = ansible/inventories/inventory.yaml
-CLUSTER_INVENTORY  = ansible/inventories/cluster.yaml
-BOOTSTRAP_PLAYBOOK = ansible/00-init.yml
-CLUSTER_PLAYBOOK   = ansible/10-cluster.yml
-WRAPPER            = ./ansiblew
+WRAPPER 		:= ./ansiblew
 
-.PHONY: bootstrap vps local lint
+LOCAL_INV 		:= ansible/inventories/local.yaml
+BOOTSTRAP_INV	:= ansible/inventories/bootstrap.yaml
+K3S_INV 		:= ansible/inventories/k3s_cluster.yaml
+MICROK8S_INV 	:= ansible/inventories/microk8s_cluster.yaml
+
+.PHONY: k3s microk8s local-k3s local-microk8s bootstrap lint
+
+k3s:
+	$(WRAPPER) -i $(K3S_INV) ansible/k3s.yml
+
+microk8s:
+	$(WRAPPER) -i $(MICROK8S_INV) ansible/microk8s.yml
+
+local-k3s:
+	$(WRAPPER) -i $(LOCAL_INV) ansible/k3s.yml
+
+local-microk8s:
+	$(WRAPPER) -i $(LOCAL_INV) ansible/microk8s.yml
 
 bootstrap:
-	$(WRAPPER) -i $(INVENTORY) -i $(CLUSTER_INVENTORY) -l vps $(BOOTSTRAP_PLAYBOOK)
-
-vps:
-	$(WRAPPER) -i $(INVENTORY) -i $(CLUSTER_INVENTORY) -l vps $(CLUSTER_PLAYBOOK)
-
-local:
-	$(WRAPPER) -i $(INVENTORY) -l local --tags cluster $(CLUSTER_PLAYBOOK)
+	$(WRAPPER) -i $(BOOTSTRAP_INV) ansible/bootstrap.yml
 
 lint:
 	$(WRAPPER) ansible-lint .
