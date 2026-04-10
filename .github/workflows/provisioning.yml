@@ -51,8 +51,22 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
 
-      - name: ⚡ Throw error
+      - name: ⚡ Run Bootstrap Playbook
+        env:
+          123: ${{ vars.BOOTSTRAP_HOSTS }}
+          ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
+          PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
-          echo "::error::bla"
-          exit 1
+          make bootstrap || {
+            echo "::error::Bootstrap failed during make bootstrap"
+            echo "### ❌ Bootstrap Failure Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Command:** \`make bootstrap\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** Failed" >> $GITHUB_STEP_SUMMARY
+            echo "**User:** ${{ github.event.inputs.SSH_USER }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Hosts:** ${{ vars.BOOTSTRAP_HOSTS }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the logs above for detailed error information." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
             
