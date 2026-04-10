@@ -7,8 +7,7 @@ def get_inventory():
     try:
         microk8s_host = os.environ['MICROK8S_HOST'].strip()
     except KeyError:
-        sys.stderr.write("ERROR: MICROK8S_HOST environment variable is required\n")
-        sys.exit(1)
+        raise SystemExit("MICROK8S_HOST environment variable is required")
     
     hosts = [microk8s_host] if microk8s_host else []
     
