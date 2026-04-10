@@ -59,6 +59,7 @@ jobs:
           ANSIBLE_STDOUT_CALLBACK: yaml
           ANSIBLE_VERBOSITY: 2
         run: |
+          set -e
           echo "::group::🚀 Launching Ansible"
           {
             ./ansiblew -i ansible/inventories/bootstrap.py ansible/bootstrap.yml
