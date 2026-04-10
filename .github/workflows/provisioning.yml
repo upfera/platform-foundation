@@ -59,16 +59,24 @@ jobs:
           ANSIBLE_STDOUT_CALLBACK: yaml
           ANSIBLE_VERBOSITY: 2
         run: |
-          set -e
-          echo "::group::🚀 Launching Ansible"
+          echo "::group::🚀 Start proces"
+    
+          # Symulacja błędu (zamień 'false' na cokolwiek co rzuca błąd)
           {
-            ./ansiblew -i ansible/inventories/bootstrap.py ansible/bootstrap.yml
-            echo "::endgroup::"
+            echo "Wykonuję ryzykowną operację..."
+            false # To jest nasz "throw" (exit code 1)
+            
+            echo "::endgroup::" # To się nigdy nie wykona
           } || {
-            EXIT_CODE=$?
-            echo "::endgroup::"
-            echo "::error title=Deployment Failed::Process exited with code $EXIT_CODE. Check the 'Run Provisioning' group for details."
-            exit $EXIT_CODE
+          # CATCH BLOCK
+          EXIT_CODE=$?
+          echo "::endgroup::"
+          
+          # Logujemy błąd do sekcji Annotations
+          echo "::error title=Critical Failure::Złapano błąd (Exit Code: $EXIT_CODE). Przerywam pipeline!"
+          
+          # KLUCZOWE: Bez tego linia poniżej sprawi, że krok będzie ZIELONY
+          exit $EXIT_CODE
           }
       
             
