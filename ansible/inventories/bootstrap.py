@@ -3,11 +3,14 @@ import os
 import json
 import sys
 
+RED = "\033[91m"
+RESET = "\033[0m"
+
 def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
     except KeyError:
-        raise SystemExit("BOOTSTRAP_HOSTS environment variable is required")
+        raise SystemExit(f"{RED}Error: BOOTSTRAP_HOSTS environment variable is required{RESET}")
     
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
     

@@ -3,11 +3,14 @@ import os
 import json
 import sys
 
+RED = "\033[91m"
+RESET = "\033[0m"
+
 def get_inventory():
     try:
         microk8s_host = os.environ['MICROK8S_HOST'].strip()
     except KeyError:
-        raise SystemExit("MICROK8S_HOST environment variable is required")
+        raise SystemExit(f"{RED}Error: MICROK8S_HOST environment variable is required{RESET}")
     
     hosts = [microk8s_host] if microk8s_host else []
     
