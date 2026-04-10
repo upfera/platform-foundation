@@ -4,7 +4,12 @@ import json
 import sys
 
 def get_inventory():
-    hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
+    try:
+        hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
+    except KeyError:
+        sys.stderr.write("ERROR: BOOTSTRAP_HOSTS environment variable is required\n")
+        sys.exit(1)
+    
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
     
     return {

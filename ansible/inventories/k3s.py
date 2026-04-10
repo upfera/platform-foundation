@@ -4,8 +4,12 @@ import json
 import sys
 
 def get_inventory():
-    server_hosts_env = os.environ['K3S_SERVER_HOSTS'].strip()
-    agent_hosts_env = os.environ['K3S_AGENT_HOSTS'].strip()
+    try:
+        server_hosts_env = os.environ['K3S_SERVER_HOSTS'].strip()
+        agent_hosts_env = os.environ['K3S_AGENT_HOSTS'].strip()
+    except KeyError as e:
+        sys.stderr.write(f"ERROR: {e.args[0]} environment variable is required\n")
+        sys.exit(1)
     
     servers = [h.strip() for h in server_hosts_env.split(',') if h.strip()]
     agents = [h.strip() for h in agent_hosts_env.split(',') if h.strip()]

@@ -53,7 +53,7 @@ jobs:
 
       - name: ⚡ Run Bootstrap Playbook
         env:
-          BOOTSTRAP_HOSTS: ${{ vars.BOOTSTRAP_HOSTS }}
+          123: ${{ vars.BOOTSTRAP_HOSTS }}
           ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
