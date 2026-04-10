@@ -9,7 +9,7 @@ from ansible.errors import AnsibleParserError
 def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
-    except KeyError
+    except KeyError:
         raise AnsibleParserError(
             "BOOTSTRAP_HOSTS environment variable is required!"
         )
