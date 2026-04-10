@@ -23,9 +23,7 @@ local-microk8s:
 	$(WRAPPER) -i $(LOCAL_INV) ansible/microk8s.yml
 
 bootstrap:
-	@echo "▶ bootstrap starting"
-	@$(WRAPPER) -i $(BOOTSTRAP_INV) ansible/bootstrap.yml || \
-	  (echo "❌ bootstrap failed" >&2; exit 1)
+	@$(WRAPPER) -i $(BOOTSTRAP_INV) ansible/bootstrap.yml
 
 lint:
 	$(WRAPPER) ansible-lint .
