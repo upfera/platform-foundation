@@ -59,17 +59,15 @@ jobs:
           ANSIBLE_STDOUT_CALLBACK: yaml
           ANSIBLE_VERBOSITY: 2
         run: |
-          echo "Sprawdzam zmienne..."
-          echo "BOOTSTRAP_HOSTS: $BOOTSTRAP_HOSTS"
-          echo "ANSIBLE_USER: $ANSIBLE_USER"
+          echo "::group::🚀 Launching Ansible"
+          {
+            ./ansiblew -i ansible/inventories/bootstrap.py ansible/bootstrap.yml
+            echo "::endgroup::"
+          } || {
+            EXIT_CODE=$?
+            echo "::endgroup::"
+            echo "::error title=Deployment Failed::Process exited with code $EXIT_CODE. Check the 'Run Provisioning' group for details."
+            exit $EXIT_CODE
+          }
       
-          # Symulacja Twojego 'if(1==1) throw'
-          if [ "$BOOTSTRAP_HOSTS" == "" ]; then
-          echo "❌ BŁĄD: Zmienna BOOTSTRAP_HOSTS jest pusta!"
-          exit 1
-          fi
-      
-          # Opcjonalnie: wymuszenie błędu niezależnie od logiki
-          echo "Rzucam błąd testowy..."
-          exit 1
             
