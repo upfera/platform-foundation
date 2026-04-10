@@ -11,10 +11,13 @@ def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
     except KeyError:
-        raise SystemExit(f"{RED}Error: BOOTSTRAP_HOSTS environment variable is required{RESET}")
+        RED = '\033[31m'
+        RESET = '\033[0m'
+        sys.stderr.write(f"{RED}ERROR: BOOTSTRAP_HOSTS environment variable is required{RESET}\n")
+        sys.exit(1)
 
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
-    
+
     return {
         "all": {
             "hosts": hosts,
