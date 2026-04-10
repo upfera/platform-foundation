@@ -58,6 +58,5 @@ jobs:
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
           ANSIBLE_FORCE_COLOR: "true"
         run: |
-          set +e
           make bootstrap
             
