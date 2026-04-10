@@ -56,7 +56,6 @@ jobs:
           123: ${{ vars.BOOTSTRAP_HOSTS }}
           ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
-          ANSIBLE_FORCE_COLOR: "true"
         run: |
           make bootstrap
             
