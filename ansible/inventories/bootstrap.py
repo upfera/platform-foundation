@@ -4,12 +4,15 @@ import json
 import logging
 import sys
 
+from ansible.errors import AnsibleParserError
+
 def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
-    except KeyError:
-        logging.error("BOOTSTRAP_HOSTS environment variable is required!")
-        sys.exit(1)
+    except KeyError
+        raise AnsibleParserError(
+            "BOOTSTRAP_HOSTS environment variable is required!"
+        )
 
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
     
