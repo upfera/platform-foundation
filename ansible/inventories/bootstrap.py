@@ -4,7 +4,7 @@ import json
 import sys
 
 def get_inventory():
-    hosts_env = os.environ.get('BOOTSTRAP_HOSTS', '192.168.1.10') # Default for example or testing
+    hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
     
     return {

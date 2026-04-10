@@ -4,9 +4,9 @@ import json
 import sys
 
 def get_inventory():
-    microk8s_host = os.environ.get('MICROK8S_HOST', '192.168.1.20')
+    microk8s_host = os.environ['MICROK8S_HOST'].strip()
     
-    hosts = [microk8s_host.strip()] if microk8s_host.strip() else []
+    hosts = [microk8s_host] if microk8s_host else []
     
     return {
         "microk8s_cluster": {

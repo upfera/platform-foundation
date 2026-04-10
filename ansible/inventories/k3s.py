@@ -4,8 +4,8 @@ import json
 import sys
 
 def get_inventory():
-    server_hosts_env = os.environ.get('K3S_SERVER_HOSTS', '192.168.1.10')
-    agent_hosts_env = os.environ.get('K3S_AGENT_HOSTS', '192.168.1.11,192.168.1.12')
+    server_hosts_env = os.environ['K3S_SERVER_HOSTS'].strip()
+    agent_hosts_env = os.environ['K3S_AGENT_HOSTS'].strip()
     
     servers = [h.strip() for h in server_hosts_env.split(',') if h.strip()]
     agents = [h.strip() for h in agent_hosts_env.split(',') if h.strip()]
