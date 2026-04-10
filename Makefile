@@ -7,6 +7,9 @@ MICROK8S_INV 	:= ansible/inventories/microk8s.py
 
 .PHONY: k3s microk8s local-k3s local-microk8s bootstrap lint
 
+SHELL := /bin/bash
+.SHELLFLAGS := -euo pipefail -c
+
 k3s:
 	$(WRAPPER) -i $(K3S_INV) ansible/k3s.yml
 
