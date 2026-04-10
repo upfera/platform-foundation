@@ -59,5 +59,7 @@ jobs:
           ANY_ERRORS_FATAL: "true"
           ANSIBLE_FORCE_COLOR: "true"
         run: |
+          set +e
           make bootstrap
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
             
