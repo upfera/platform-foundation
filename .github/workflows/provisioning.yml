@@ -57,9 +57,8 @@ jobs:
           ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
           ANY_ERRORS_FATAL: "true"
+          PY_COLORS: ‘1’
           ANSIBLE_FORCE_COLOR: "true"
         run: |
-          set +e
           make bootstrap
-          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
             
