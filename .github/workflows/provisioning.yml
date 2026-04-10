@@ -59,5 +59,17 @@ jobs:
           ANSIBLE_STDOUT_CALLBACK: yaml
           ANSIBLE_VERBOSITY: 2
         run: |
-          make bootstrap
+          echo "Sprawdzam zmienne..."
+          echo "BOOTSTRAP_HOSTS: $BOOTSTRAP_HOSTS"
+          echo "ANSIBLE_USER: $ANSIBLE_USER"
+      
+          # Symulacja Twojego 'if(1==1) throw'
+          if [ "$BOOTSTRAP_HOSTS" == "" ]; then
+          echo "❌ BŁĄD: Zmienna BOOTSTRAP_HOSTS jest pusta!"
+          exit 1
+          fi
+      
+          # Opcjonalnie: wymuszenie błędu niezależnie od logiki
+          echo "Rzucam błąd testowy..."
+          exit 1
             
