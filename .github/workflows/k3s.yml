@@ -52,6 +52,8 @@ jobs:
 
       - name: ⚡ Run K3s Playbook
         env:
+          K3S_SERVER_HOSTS: ${{ vars.K3S_SERVER_HOSTS }}
+          K3S_AGENT_HOSTS: ${{ vars.K3S_AGENT_HOSTS }}
           K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
         run: |
           if [ "${{ inputs.playbook }}" = "reset" ]; then
