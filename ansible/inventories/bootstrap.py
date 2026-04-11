@@ -10,11 +10,8 @@ RESET = "\033[0m"
 def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
-    except KeyError:
-        RED = '\033[31m'
-        RESET = '\033[0m'
-        sys.stderr.write(f"{RED}[Error]: BOOTSTRAP_HOSTS environment variable is required{RESET}\n")
-        sys.exit(1)
+    except KeyError as e:
+        raise SystemExit("Error: {e.args[0]} environment variable is required")
 
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
 

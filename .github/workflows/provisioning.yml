@@ -51,6 +51,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
 
+      - name: 🔍 Register Ansible Problem Matcher
+        run: echo "::add-matcher::.github/matchers/ansible.json"
+
       - name: ⚡ Run Bootstrap Playbook
         env:
           123: ${{ vars.BOOTSTRAP_HOSTS }}
@@ -58,4 +61,10 @@ jobs:
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
           make bootstrap
+
+      - name: 🔍 Remove Ansible Problem Matcher
+        if: always()
+        run: |
+          echo "::remove-matcher owner=ansible-fatal::"
+          echo "::remove-matcher owner=ansible-error::"
             

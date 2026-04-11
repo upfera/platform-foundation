@@ -9,8 +9,8 @@ RESET = "\033[0m"
 def get_inventory():
     try:
         microk8s_host = os.environ['MICROK8S_HOST'].strip()
-    except KeyError:
-        raise SystemExit(f"{RED}Error: MICROK8S_HOST environment variable is required{RESET}")
+    except KeyError as e:
+        raise SystemExit("Error: {e.args[0]} environment variable is required")
     
     hosts = [microk8s_host] if microk8s_host else []
     

@@ -43,5 +43,14 @@ jobs:
           mkdir -p ansible/inventories
           echo "${{ vars.CLUSTER_INVENTORY }}" > ansible/inventories/cluster.yaml
 
+      - name: 🔍 Register Ansible Problem Matcher
+        run: echo "::add-matcher::.github/matchers/ansible.json"
+
       - name: ⚡ Run Site Playbook
         run: make vps
+
+      - name: 🔍 Remove Ansible Problem Matcher
+        if: always()
+        run: |
+          echo "::remove-matcher owner=ansible-fatal::"
+          echo "::remove-matcher owner=ansible-error::"
