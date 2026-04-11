@@ -1,7 +1,16 @@
-name: 🚀 Deploy Infrastructure
+name: 🚀 K3s Cluster
 
 on:
   workflow_dispatch:
+    inputs:
+      playbook:
+        description: 'Playbook to run'
+        required: true
+        default: 'site'
+        type: choice
+        options:
+          - site
+          - reset
 
 jobs:
   deploy:
@@ -41,8 +50,15 @@ jobs:
       - name: 🔍 Register Ansible Problem Matcher
         run: echo "::add-matcher::.github/matchers/problem-matcher.json"
 
-      - name: ⚡ Run Site Playbook
-        run: make k3s
+      - name: ⚡ Run K3s Playbook
+        env:
+          K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
+        run: |
+          if [ "${{ inputs.playbook }}" = "reset" ]; then
+            make k3s-reset
+          else
+            make k3s
+          fi
 
       - name: 🔍 Remove Ansible Problem Matcher
         if: always()

@@ -7,6 +7,7 @@ def get_inventory():
     try:
         server_hosts_env = os.environ['K3S_SERVER_HOSTS'].strip()
         agent_hosts_env = os.environ['K3S_AGENT_HOSTS'].strip()
+        token = os.environ['K3S_TOKEN'].strip()
     except KeyError as e:
         raise SystemExit(f"Error: {e.args[0]} environment variable is required")
     
@@ -26,7 +27,8 @@ def get_inventory():
         "_meta": {
             "hostvars": {
                 host: {
-                    "k3s_role": "server" if host in servers else "agent"
+                    "k3s_role": "server" if host in servers else "agent",
+                    "token": token
                 }
                 for host in servers + agents
             }

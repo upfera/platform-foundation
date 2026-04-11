@@ -5,13 +5,16 @@ BOOTSTRAP_INV	:= ansible/inventories/bootstrap.py
 K3S_INV 		:= ansible/inventories/k3s.py
 MICROK8S_INV 	:= ansible/inventories/microk8s.py
 
-.PHONY: k3s microk8s local-k3s local-microk8s bootstrap lint
+.PHONY: k3s k3s-reset microk8s local-k3s local-microk8s bootstrap lint
 
 SHELL := /bin/bash
 .SHELLFLAGS := -euo pipefail -c
 
 k3s:
 	$(WRAPPER) -i $(K3S_INV) ansible/k3s.yml
+
+k3s-reset:
+	$(WRAPPER) -i $(K3S_INV) ansible/k3s-reset.yml
 
 microk8s:
 	$(WRAPPER) -i $(MICROK8S_INV) ansible/microk8s.yml
