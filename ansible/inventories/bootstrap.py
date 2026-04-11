@@ -11,7 +11,7 @@ def get_inventory():
     try:
         hosts_env = os.environ['BOOTSTRAP_HOSTS'].strip()
     except KeyError as e:
-        raise SystemExit("Error: {e.args[0]} environment variable is required")
+        raise SystemExit(f"Error: {e.args[0]} environment variable is required")
 
     hosts = [h.strip() for h in hosts_env.split(',') if h.strip()]
 
