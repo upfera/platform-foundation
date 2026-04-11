@@ -55,6 +55,7 @@ jobs:
           K3S_SERVER_HOSTS: ${{ vars.K3S_SERVER_HOSTS }}
           K3S_AGENT_HOSTS: ${{ vars.K3S_AGENT_HOSTS }}
           K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
+          ANSIBLE_USER: ops
         run: |
           if [ "${{ inputs.playbook }}" = "reset" ]; then
             make k3s-reset
