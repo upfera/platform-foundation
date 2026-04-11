@@ -3,7 +3,7 @@ name: 🧱 Provision VPS (Bootstrap)
 on:
   workflow_dispatch:
     inputs:
-      SSH_USER:
+      user:
         description: 'User to connect with (root or ops)'
         required: true
         default: 'root'
@@ -57,7 +57,7 @@ jobs:
       - name: ⚡ Run Bootstrap Playbook
         env:
           BOOTSTRAP_HOSTS: ${{ vars.BOOTSTRAP_HOSTS }}
-          ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
+          ANSIBLE_USER: ${{ github.event.inputs.user }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
           make bootstrap
