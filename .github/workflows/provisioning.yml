@@ -52,11 +52,11 @@ jobs:
           echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
 
       - name: 🔍 Register Ansible Problem Matcher
-        run: echo "::add-matcher::.github/matchers/ansible.json"
+        run: echo "::add-matcher::.github/matchers/problem-matcher.json"
 
       - name: ⚡ Run Bootstrap Playbook
         env:
-          123: ${{ vars.BOOTSTRAP_HOSTS }}
+          BOOTSTRAP_HOSTS: ${{ vars.BOOTSTRAP_HOSTS }}
           ANSIBLE_USER: ${{ github.event.inputs.SSH_USER }}
           PUB_KEY_PATH: ~/.ssh/id_rsa.pub
         run: |
@@ -65,6 +65,5 @@ jobs:
       - name: 🔍 Remove Ansible Problem Matcher
         if: always()
         run: |
-          echo "::remove-matcher owner=ansible-fatal::"
           echo "::remove-matcher owner=ansible-error::"
             
