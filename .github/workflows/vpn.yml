@@ -1,19 +1,10 @@
-name: ☸️ K3s Cluster
+name: 🛡️ Deploy WireGuard VPN
 
 on:
   workflow_dispatch:
-    inputs:
-      playbook:
-        description: 'Playbook to run'
-        required: true
-        default: 'site'
-        type: choice
-        options:
-          - site
-          - reset
 
 jobs:
-  k3s:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 🔍 Checkout code
@@ -40,18 +31,20 @@ jobs:
           eval $(ssh-agent -s)
           echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_OPS_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
 
       - name: 🔍 Register Ansible Problem Matcher
         run: echo "::add-matcher::.github/matchers/problem-matcher.json"
 
-      - name: ⚡ Run K3s Playbook
+      - name: ⚡ Run VPN Playbook
         env:
-          K3S_SERVERS: ${{ vars.K3S_SERVERS }}
-          K3S_AGENTS: ${{ vars.K3S_AGENTS }}
-          K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
+          VPN_IP: ${{ vars.VPN_IP }}
           ANSIBLE_USER: ops
-          PLAYBOOK: ${{ inputs.playbook }}
-        run: make k3s
+          PUB_KEY_PATH: ~/.ssh/id_rsa.pub
+        run: |
+          make vpn
 
       - name: 🔍 Remove Ansible Problem Matcher
         if: always()

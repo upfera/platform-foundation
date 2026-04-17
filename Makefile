@@ -3,6 +3,7 @@ WRAPPER 		:= ./ansiblew
 LOCAL_INV 		:= ansible/inventories/local.yaml
 BOOTSTRAP_INV	:= ansible/inventories/bootstrap.py
 K3S_INV 		:= ansible/inventories/k3s.py
+VPN_INV 		:= ansible/inventories/vpn.py
 MICROK8S_INV 	:= ansible/inventories/microk8s.py
 
 .PHONY: k3s microk8s local-k3s local-microk8s bootstrap lint
@@ -21,6 +22,13 @@ local-microk8s:
 
 bootstrap:
 	@$(WRAPPER) -i $(BOOTSTRAP_INV) ansible/bootstrap.yml
+
+vpn:
+	@$(WRAPPER) -i $(VPN_INV) ansible/vpn.yml
+	@echo "--------------------------------------------------------"
+	@echo "🚀 VPN connection command (on WSL):"
+	@echo "   sudo wg-quick up ./vpn_client.conf"
+	@echo "--------------------------------------------------------"
 
 lint:
 	$(WRAPPER) ansible-lint .

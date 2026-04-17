@@ -1,0 +1,8 @@
+---
+- name: 🛡️ Setup WireGuard VPN
+  hosts: wireguard
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: wireguard
