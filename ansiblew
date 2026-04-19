@@ -15,8 +15,8 @@ source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
 pip install -r "$ROOT/requirements.txt"
 
-export ANSIBLE_CONFIG="$ROOT/ansible.cfg"
-ansible-galaxy collection install -r "$ROOT/requirements.yaml" -p ./collections
+export ANSIBLE_CONFIG="$ROOT/ansible/ansible.cfg"
+ansible-galaxy collection install -r "$ROOT/ansible/requirements.yaml" -p "$ROOT/.ansible/collections"
 
 if [[ "$1" == ansible-* ]]; then
   exec "$@"

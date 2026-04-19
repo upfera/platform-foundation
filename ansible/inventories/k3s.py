@@ -66,7 +66,9 @@ def get_inventory() -> Dict[str, Any]:
 
                 "extra_server_args": (
                     "--node-ip={{ k3s_node_ip }} "
-                    "--advertise-address={{ k3s_node_ip }}"
+                    "--advertise-address={{ k3s_node_ip }} "
+                    "--disable traefik "
+                    "--disable servicelb "
                 )
             }
         },
