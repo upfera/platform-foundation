@@ -14,46 +14,17 @@ on:
 
 jobs:
   k3s:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔍 Checkout code
-        uses: actions/checkout@v6
-
-      - name: ⚙️ Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-          cache: 'pip'
-          cache-dependency-path: |
-            requirements.txt
-            requirements.yaml
-          pip-install: -r requirements.txt
-
-      - name: 🌌 Cache Ansible Collections
-        uses: actions/cache@v5
-        with:
-          path: collections
-          key: collections-${{ runner.os }}-${{ hashFiles('requirements.yaml') }}
-
-      - name: 🔑 Setup SSH
-        run: |
-          eval $(ssh-agent -s)
-          echo "${{ secrets.VPS_OPS_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-
-      - name: 🔍 Register Ansible Problem Matcher
-        run: echo "::add-matcher::.github/matchers/problem-matcher.json"
-
-      - name: ⚡ Run K3s Playbook
-        env:
-          K3S_SERVERS: ${{ vars.K3S_SERVERS }}
-          K3S_AGENTS: ${{ vars.K3S_AGENTS }}
-          K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
-          ANSIBLE_USER: ops
-          PLAYBOOK: ${{ inputs.playbook }}
-        run: make k3s
-
-      - name: 🔍 Remove Ansible Problem Matcher
-        if: always()
-        run: |
-          echo "::remove-matcher owner=ansible-error::"
+    uses: ./.github/.github/workflows/ansible.yml@main
+    with:
+      playbook: ansible/playbooks/k3s.yml
+      inventory: ansible/inventories/k3s.py
+      ansible_user: ops
+      pre-build-hook: |
+        echo "K3S_SERVERS=${{ vars.K3S_SERVERS }}" >> $GITHUB_ENV
+        echo "K3S_AGENTS=${{ vars.K3S_AGENTS }}" >> $GITHUB_ENV
+        echo "K3S_TOKEN=${{ secrets.asdasd }}" >> $GITHUB_ENV
+        echo "playbook_name=${{ github.event.inputs.playbook }}" >> $GITHUB_ENV
+        ansible-galaxy collection install -r ansible/requirements.yaml
+    secrets:
+      ssh_private_key: ${{ secrets.VPS_OPS_PRIVATE_KEY }}
+      asdasd: asdas

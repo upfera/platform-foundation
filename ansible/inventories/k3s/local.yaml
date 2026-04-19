@@ -1,0 +1,29 @@
+# This is a sample inventory for a local K3s cluster (e.g., using VMs or containers).
+# Real values should be provided by an external infrastructure source.
+server:
+  hosts:
+    10.0.0.10:
+      ansible_host: 127.0.0.1
+      ansible_port: 2222
+      k3s_node_ip: 10.0.0.10
+  vars:
+    api_endpoint: 10.0.0.10
+    extra_server_args: >-
+      --node-ip={{ k3s_node_ip }}
+      --advertise-address={{ k3s_node_ip }}
+      --disable traefik
+      --disable servicelb
+
+agent:
+  hosts:
+    10.0.0.11:
+      ansible_host: 127.0.0.1
+      ansible_port: 2223
+      k3s_node_ip: 10.0.0.11
+  vars:
+    extra_agent_args: "--node-ip={{ k3s_node_ip }}"
+
+k3s_cluster:
+  children:
+    server:
+    agent:

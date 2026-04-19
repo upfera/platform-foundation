@@ -8,8 +8,6 @@ PostUp = iptables -A FORWARD -i {{ wireguard_interface }} -j ACCEPT; iptables -t
 PostDown = iptables -D FORWARD -i {{ wireguard_interface }} -j ACCEPT; iptables -t nat -D POSTROUTING -s {{ wireguard_address }} -d {{ wireguard_private_network }} -j MASQUERADE
 
 # Peers configuration
-{% for peer in wireguard_peers %}
-[Peer]
-PublicKey = {{ peer.public_key }}
-AllowedIPs = {{ peer.allowed_ips }}
-{% endfor %}
+{% if wg_peers_conf is defined and not wg_peers_conf.skipped | default(false) %}
+{{ wg_peers_conf.content | b64decode }}
+{% endif %}

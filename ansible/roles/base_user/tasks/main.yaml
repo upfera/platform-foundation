@@ -23,3 +23,21 @@
     user: "{{ ops_user }}"
     key: "{{ lookup('file', ansible_user_public_key_file) }}"
   when: ansible_user_public_key_file is defined and ansible_user_public_key_file != ""
+
+- name: 🔑 Ensure .ssh directory exists for ops user
+  ansible.builtin.file:
+    path: "/home/{{ ops_user }}/.ssh"
+    state: directory
+    owner: "{{ ops_user }}"
+    group: "{{ ops_user }}"
+    mode: '0700'
+  when: ops_private_key is defined and ops_private_key != ""
+
+- name: 🔑 Setup ops private key
+  ansible.builtin.copy:
+    dest: "/home/{{ ops_user }}/.ssh/id_rsa"
+    content: "{{ ops_private_key }}"
+    owner: "{{ ops_user }}"
+    group: "{{ ops_user }}"
+    mode: '0600'
+  when: ops_private_key is defined and ops_private_key != ""

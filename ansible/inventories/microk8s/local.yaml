@@ -1,0 +1,6 @@
+# This is a sample inventory for a local MicroK8s cluster.
+# Real values should be provided by an external infrastructure source.
+microk8s_cluster:
+  hosts:
+    localhost:
+      ansible_connection: local

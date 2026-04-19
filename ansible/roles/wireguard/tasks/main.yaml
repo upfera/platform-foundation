@@ -42,6 +42,17 @@
     src: /etc/wireguard/privatekey
   register: wg_private_key
 
+- name: 🔍 Check if WireGuard peers.conf exists
+  ansible.builtin.stat:
+    path: /etc/wireguard/peers.conf
+  register: wg_peers_conf_file
+
+- name: 📖 Read WireGuard peers.conf if exists
+  ansible.builtin.slurp:
+    src: /etc/wireguard/peers.conf
+  register: wg_peers_conf
+  when: wg_peers_conf_file.stat.exists
+
 - name: ⚙️ Configure WireGuard interface
   ansible.builtin.template:
     src: wg0.conf.j2

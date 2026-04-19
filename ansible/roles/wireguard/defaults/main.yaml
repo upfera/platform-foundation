@@ -1,6 +1,6 @@
 ---
-wireguard_interface: wg0
-wireguard_port: 51820
-wireguard_address: 10.200.0.1/24
-wireguard_private_network: 10.0.0.0/16
+wireguard_interface: "{{ lookup('env', 'WIREGUARD_INTERFACE') | default('wg0', true) }}"
+wireguard_port: "{{ lookup('env', 'WIREGUARD_PORT') | default('51820', true) }}"
+wireguard_address: "{{ lookup('env', 'WIREGUARD_ADDRESS') | default('10.200.0.1/24', true) }}"
+wireguard_private_network: "{{ lookup('env', 'WIREGUARD_PRIVATE_NETWORK') | default('10.0.0.0/16', true) }}"
 wireguard_peers: []

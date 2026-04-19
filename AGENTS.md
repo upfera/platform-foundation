@@ -1,50 +1,9 @@
-# 📘 Upfera Foundation: Development Guidelines
+# 📘 Upfera Foundation: AI Agent Guidelines
 
-This document defines the **strict engineering standards** for the `platform-foundation` project.
+This document defines the **strict engineering standards** for AI agents working on the `platform-foundation` project.
 
----
-
-## 🌐 Infrastructure Context & Goals
-
-The project aims to build a production-grade Kubernetes platform foundation using K3s.
-
-### 🏗️ Topology
-* There are **3 VPS nodes** forming the cluster.
-* Role distribution: **1 Control-plane** and **2 Workers**.
-* Infrastructure is treated as **dynamic**; nodes are defined via environment variables:
-  - `K3S_SERVERS`
-  - `K3S_AGENTS`
-
-### 📋 Node Definition Format
-Nodes are passed as JSON arrays of objects. **IPs must never be hardcoded in the codebase.**
-
-Example `K3S_SERVERS` / `K3S_AGENTS`:
-```json
-[
-  {"name":"fsn-01","public":"1.2.3.4","private":"10.0.0.101"},
-  {"name":"fsn-02","public":"1.2.3.5","private":"10.0.0.102"},
-  {"name":"fsn-03","public":"1.2.3.6","private":"10.0.0.103"}
-]
-```
-
-### 🕸️ Networking Model
-* **Kubernetes Private Network:** `10.0.0.0/16` (Hetzner Private Network).
-* **WireGuard VPN Network:** `10.200.0.0/24`.
-* **VPN Purpose:** Administrative access only.
-* **Security:** Kubernetes API (`6443`) is NOT publicly exposed; it is accessible ONLY via the VPN.
-
-### 🔐 Access Model
-* **kubectl access** is only possible after connecting to the WireGuard VPN.
-* Once connected, the cluster is accessed via **private IPs** (`10.0.0.x`) or **internal DNS**.
-* **Public Load Balancer** (if used) is strictly for application traffic (`80`/`443`), never for the Kubernetes API.
-
----
-
-## 🎯 Project Goals
-The goal is simple:
-👉 **clean, predictable, production-grade Ansible**
-👉 **zero overengineering**
-👉 **rock-star level execution quality**
+> [!IMPORTANT]
+> **Always be aware of the current `README.md`** as it contains the project description, infrastructure topology, and technical goals.
 
 ---
 

@@ -1,0 +1,6 @@
+# This is a sample inventory for a local WireGuard VPN host.
+# Real values should be provided by an external infrastructure source.
+wireguard:
+  hosts:
+    localhost:
+      ansible_connection: local

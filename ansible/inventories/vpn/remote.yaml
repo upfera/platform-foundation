@@ -1,0 +1,6 @@
+# This is a sample inventory for a remote WireGuard VPN host.
+# Real values should be provided by an external infrastructure source.
+wireguard:
+  hosts:
+    10.0.0.1:
+      ansible_host: 1.2.3.4

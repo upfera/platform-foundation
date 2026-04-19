@@ -1,0 +1,6 @@
+# This is a sample inventory for bootstrapping remote hosts.
+# Real values should be provided by an external infrastructure source.
+all:
+  hosts:
+    1.2.3.4:
+    1.2.3.5:

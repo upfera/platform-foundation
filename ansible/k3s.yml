@@ -1,3 +1,0 @@
----
-- name: K3s
-  ansible.builtin.import_playbook: ../collections/ansible_collections/k3s/orchestration/playbooks/{{ playbook_name | default('site') }}.yml
