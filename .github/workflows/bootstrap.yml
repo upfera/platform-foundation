@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       user:
-        description: 'User to connect with (root or ops)'
+        description: 'User to connect with'
         required: true
         default: 'root'
         type: choice
@@ -14,13 +14,21 @@ on:
 
 jobs:
   bootstrap:
-    uses: ./.github/.github/workflows/ansible.yml@main
+    uses: upfera/gh-workflows-dev/.github/workflows/ansible.yml@feature/add-ci-and-release-workflows
+
     with:
       playbook: ansible/playbooks/bootstrap.yml
-      inventory: ansible/inventories/bootstrap.yaml
+      inventory: config/ansible/inventories/bootstrap/inventory.yaml
       ansible_user: ${{ github.event.inputs.user }}
+
+      checkout_repository: upfera/platform-upfera
+      checkout_ref: main
+      checkout_path: config
+
       pre-build-hook: |
         ansible-galaxy collection install -r ansible/requirements.yaml
+
     secrets:
-      ssh_private_key: ${{ github.event.inputs.user == 'root' && secrets.VPS_ROOT_PRIVATE_KEY || secrets.VPS_OPS_PRIVATE_KEY }}
-      ops_private_key: ${{ secrets.VPS_OPS_PRIVATE_KEY }}
+      ssh_private_key: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
+      GH_CODE_BOT_APP_ID: ${{ secrets.GH_CODE_BOT_APP_ID }}
+      GH_CODE_BOT_APP_PRIVATE_KEY: ${{ secrets.GH_CODE_BOT_APP_PRIVATE_KEY }}
