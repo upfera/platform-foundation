@@ -29,6 +29,7 @@ jobs:
         ansible-galaxy collection install -r ansible/requirements.yaml
 
     secrets:
-      ssh_private_key: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
+      SSH_PRIVATE_KEY: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
+      ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT }}
       GH_CODE_BOT_APP_ID: ${{ secrets.GH_CODE_BOT_APP_ID }}
       GH_CODE_BOT_APP_PRIVATE_KEY: ${{ secrets.GH_CODE_BOT_APP_PRIVATE_KEY }}
