@@ -21,7 +21,8 @@ jobs:
       inventory: config/ansible/inventories/bootstrap/inventory.yaml
       ansible_user: ${{ github.event.inputs.user }}
 
-      checkout_repository: upfera/platform-config-upfera
+      checkout_owner: upfera
+      checkout_repository: platform-config-upfera
       checkout_ref: main
       checkout_path: config
 
