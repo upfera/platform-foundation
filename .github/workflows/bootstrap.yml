@@ -18,7 +18,7 @@ jobs:
 
     with:
       playbook: ansible/playbooks/bootstrap.yml
-      inventory: config/ansible/inventories/bootstrap/inventory.yaml
+      inventory: ansible/inventories/bootstrap/inventory.yaml
       ansible_user: ${{ github.event.inputs.user }}
 
       checkout_owner: upfera
