@@ -28,9 +28,8 @@ jobs:
       checkout_ref: main
       checkout_path: config
 
-      ssh_private_key: ${{ github.event.inputs.user == 'root' && secrets.VPS_ROOT_PRIVATE_KEY || secrets.VPS_OPS_PRIVATE_KEY }}
-
     secrets:
+      SSH_PRIVATE_KEY: ${{ github.event.inputs.user == 'root' && secrets.VPS_ROOT_PRIVATE_KEY || secrets.VPS_OPS_PRIVATE_KEY }}
       ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
       GH_CODE_BOT_APP_ID: ${{ secrets.GH_CODE_BOT_APP_ID }}
       GH_CODE_BOT_APP_PRIVATE_KEY: ${{ secrets.GH_CODE_BOT_APP_PRIVATE_KEY }}
