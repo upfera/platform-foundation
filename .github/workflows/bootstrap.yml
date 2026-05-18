@@ -21,14 +21,12 @@ jobs:
       inventory: config/platform-config-upfera/ansible/inventories/bootstrap/inventory.yaml
       ansible_user: ${{ github.event.inputs.user }}
       ansible_config: ansible/ansible.cfg
+      ansible_requirements: ansible/requirements.yaml
 
       checkout_owner: upfera
       checkout_repository: platform-config-upfera
       checkout_ref: main
       checkout_path: config
-
-      pre-build-hook: |
-        ansible-galaxy collection install -r ansible/requirements.yaml
 
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.VPS_ROOT_PRIVATE_KEY }}
