@@ -20,6 +20,7 @@ jobs:
       playbook: ansible/playbooks/bootstrap.yml
       inventory: config/platform-config-upfera/ansible/inventories/bootstrap/inventory.yaml
       ansible_user: ${{ github.event.inputs.user }}
+      ansible_config: ansible/ansible.cfg
 
       checkout_owner: upfera
       checkout_repository: platform-config-upfera
