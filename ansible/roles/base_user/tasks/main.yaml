@@ -21,7 +21,7 @@
 - name: 🔑 Copy SSH public key to authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ ops_user }}"
-    key: "{{ lookup('file', ansible_user_public_key_file) }}"
+    key: "{{ ops_public_key }}"
   when: ansible_user_public_key_file is defined and ansible_user_public_key_file != ""
 
 - name: 🔑 Ensure .ssh directory exists for ops user
