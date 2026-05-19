@@ -1,5 +1,3 @@
-# This is a sample inventory for local bootstrapping (usually not used as bootstrap is for VPS).
-# Real values should be provided by an external infrastructure source.
 all:
   hosts:
     localhost:

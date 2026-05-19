@@ -1,6 +1,6 @@
 ---
 - name: 🏗️ Initialize Host
-  hosts: all
+  hosts: bootstrap
   become: true
   gather_facts: true
 
