@@ -56,14 +56,15 @@ The system already provides:
 
 ## 🧩 3. Playbook Design
 
-### Single entrypoint (MANDATORY)
+### Modular Entrypoints
+The platform exposes specific operational playbooks via the collection.
 
-```text
-ansible/site.yaml
-```
+* `upfera.foundation.bootstrap`
+* `upfera.foundation.k3s`
+* `upfera.foundation.microk8s`
+* `upfera.foundation.vpn`
 
-* There must be **exactly one entrypoint**
-* No alternative playbooks (no `bootstrap.yaml`, no variants)
+Playbooks must be decoupled and handle one domain entirely.
 
 ---
 
