@@ -30,7 +30,7 @@
     - name: Enable automatic security updates
       ansible.builtin.copy:
         dest: /etc/apt/apt.conf.d/20auto-upgrades
-        mode: '0644'
+        mode: '0600'
         owner: root
         group: root
         content: |
